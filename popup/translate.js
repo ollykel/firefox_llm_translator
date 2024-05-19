@@ -2,20 +2,25 @@
 
 const getFormValues = (form) =>
 {
-  const accumulator = (accum, currInput) =>
-  {
-    if (currInput.nodeName === 'INPUT')
+    console.log(`reached getFormValues(form: ${form})`);// TODO: remove debug
+
+    const inputs = form.elements;
+    let output = {};
+
+    for (let i = 0; i < inputs.length; ++i)
     {
-      const inputName = currInput.name;
-      const inputValue = currInput.value;
+        const currInput = inputs[i];
 
-      accum[inputName] = inputValue;
-    }
-
-    return accum;
-  };// end accumulator
-
-  return form.elements.reduce(accumulator, {});
+        if (currInput.nodeName === 'INPUT')
+        {
+            const inputName = currInput.name;
+            const inputValue = currInput.value;
+            
+            output[inputName] = inputValue;
+        }
+    }// end for (let i = 0; i < inputs.length; ++i)
+    
+    return output;
 };// end getFormValues
 
 const addSubmitListener = () =>
@@ -25,9 +30,8 @@ const addSubmitListener = () =>
     e.preventDefault();
 
     const form = e.target;
-    // const inputValues = getFormValues(form);
-    // const targetLanguage = inputValues['target-language'];
-    const targetLanguage = 'hello';// TODO: replace stub
+    const inputValues = getFormValues(form);
+    const targetLanguage = inputValues['target-language'];
 
     const reportError = (err) =>
     {
