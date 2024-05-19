@@ -57,7 +57,7 @@
 
     const formatJSON = (obj) =>
     {
-        const formattedEntries = Object.entries(obj).map(([k, v]) => `${k}: ${v}`);
+        const formattedEntries = Object.entries(obj).map(([k, v]) => `"${k}": "${v}"`);
 
         return `{${formattedEntries.join(", ")}}`;
     };// end formatJSON
@@ -71,7 +71,8 @@
             .filter((node) => node.nodeType === TEXT_NODE_TYPE)
             .map((textNode) => ({
                 "getUniqueID": () => "text0000",// TODO: implement non-stub
-                "getText": () => textNode.textContent
+                "getText": () => textNode.textContent,
+                "setText": (newText) => { textNode.textContent = newText; }
         }));
 
         return ({
@@ -150,5 +151,34 @@ ${formatJSON(textTable)}
             return response.getBody();
         }
     };// end queryLLM
+
+    const translateElement = (element, targetLanguage) =>
+    {
+        const translationTable = generateTranslationTable(element, targetLanguage);
+
+        const visitElem = (elem) =>
+        {
+            const elemVisitor = makeElemVisitor(elem);
+
+            for (const textNode of elemVisitor.getTextNodes())
+            {
+                const id = testNode.getUniqueID();
+
+                if (id in translationTable)
+                {
+                    const newText = translationTable[id];
+
+                    testNode.setText(newText);
+                }
+            }// end for (const textNode of elemVisitor.getTextNodes())
+
+            for (const elem of elemVisitor.getElemNodes())
+            {
+                visitElem(elem);
+            }// end for (const elem of elemVisitor.getElemNodes())
+        };// end visitElem
+
+        visitElem(element);
+    };// end translateElement
 }
 )();
