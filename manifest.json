@@ -2,5 +2,7 @@
 	"manifest_version": 2,
   "name": "LLM Autotranslate",
   "version": "0.1",
-  "description": "Automatically translate the content of web pages using the API of an LLM such as ChatGPT."
+  "description": "Automatically translate the content of web pages using the API of an LLM such as ChatGPT.",
+
+  "permissions": ["activeTab"]
 }
