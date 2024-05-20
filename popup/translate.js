@@ -2,8 +2,6 @@
 
 const getFormValues = (form) =>
 {
-    console.log(`reached getFormValues(form: ${form})`);// TODO: remove debug
-
     const inputs = form.elements;
     let output = {};
 
