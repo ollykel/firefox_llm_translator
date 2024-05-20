@@ -200,7 +200,7 @@ ${JSON.stringify(textTable)}
         return translationTable;
     };// end generateTranslationTable
 
-    const queryAPI = ({ promptStr, apiConfig }) =>
+    const queryAPIStub = ({ promptStr, apiConfig }) =>
     {
         console.log(`promptStr: ${promptStr}`);// TODO: remove debug
         console.log(`promptStr length: ${promptStr.length}`);// TODO: remove debug
@@ -232,11 +232,11 @@ ${JSON.stringify(textTable)}
             "getError": () => "",// TODO: implement non-stub
             "getBody": () => ({ ...body })
         };
-    };// end queryAPI
+    };// end queryAPIStub
     
     const queryLLM = ({ textTable, targetLanguage, apiConfig, promptStr }) =>
     {
-        const response = queryAPI({ promptStr, apiConfig });
+        const response = queryAPIStub({ promptStr, apiConfig });
 
         if (response.hasError())
         {
