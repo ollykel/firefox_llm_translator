@@ -147,10 +147,15 @@
         'h4': true
     };// end ELEMS_TO_TRANSLATE_SET
 
-    const generateTranslationTable = ({ element, targetLanguage, apiConfig }) =>
+    const generateTranslationTable = ({ element, targetLanguage, characterLimit, apiConfig }) =>
     {
         const visitElem = (elem, shouldTranslate) =>
         {
+            if (characterLimit < 1)
+            {
+                return {};
+            }
+
             const elemVisitor = makeElemVisitor(elem);
 
             let textTable = {};
@@ -164,13 +169,27 @@
 
                     if (!isOnlyWhitespace(origText))
                     {
-                        textTable[id] = origText;
+                        characterLimit -= origText.length;
+
+                        if (characterLimit > 0)
+                        {
+                            textTable[id] = origText;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }// end for (let textNode of elemVisitor.getTextNodes())
             }
 
             for (let childNode of elemVisitor.getElemNodes())
             {
+                if (characterLimit < 1)
+                {
+                    break;
+                }
+
                 const translateNext = shouldTranslate
                     || (childNode.nodeName.toLowerCase() in ELEMS_TO_TRANSLATE_SET);
                 const subTable = visitElem(childNode, translateNext);
@@ -249,43 +268,44 @@ ${JSON.stringify(textTable)}
         }
     };// end queryLLM
 
-    const translateElement = ({ element, targetLanguage, apiConfig }) =>
+    const translateElement = ({ element, targetLanguage, characterLimit, apiConfig }) =>
     {
         const translationTable = generateTranslationTable({
-          element, targetLanguage, apiConfig
+          element, targetLanguage, characterLimit, apiConfig
         });
 
         const visitElem = (elem) =>
         {
-          const elemVisitor = makeElemVisitor(elem);
+            const elemVisitor = makeElemVisitor(elem);
 
-          for (const textNode of elemVisitor.getTextNodes())
-          {
-              const id = textNode.getUniqueID();
+            for (const textNode of elemVisitor.getTextNodes())
+            {
+                const id = textNode.getUniqueID();
 
-              if (id in translationTable)
-              {
-                const newText = translationTable[id];
+                if (id in translationTable)
+                {
+                  const newText = translationTable[id];
 
-                textNode.setTranslatedText(newText);
-                textNode.displayTranslated();
-              }
-          }// end for (const textNode of elemVisitor.getTextNodes())
+                  textNode.setTranslatedText(newText);
+                  textNode.displayTranslated();
+                }
+            }// end for (const textNode of elemVisitor.getTextNodes())
 
-          for (const elem of elemVisitor.getElemNodes())
-          {
-              visitElem(elem);
-          }// end for (const elem of elemVisitor.getElemNodes())
+            for (const elem of elemVisitor.getElemNodes())
+            {
+                visitElem(elem);
+            }// end for (const elem of elemVisitor.getElemNodes())
         };// end visitElem
 
         visitElem(element);
     };// end translateElement
     
-    const translatePage = ({ targetLanguage, apiConfig }) =>
+    const translatePage = ({ targetLanguage, characterLimit, apiConfig }) =>
     {
         translateElement({
             element: document.body,
             targetLanguage,
+            characterLimit,
             apiConfig
         });
     };// end translateDocument
