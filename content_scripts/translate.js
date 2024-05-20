@@ -218,7 +218,13 @@ ${JSON.stringify(textTable)}
             "text:element200:0": "Foobar",
             "text:element2000:0": "Killroy was here",
             "text:element20000:0": "Foobar",
-            "text:element200000:0": "Killroy was here"
+            "text:element200000:0": "Killroy was here",
+            "text:element3:0": "Foobar",
+            "text:element30:0": "Killroy was here",
+            "text:element300:0": "Foobar",
+            "text:element3000:0": "Killroy was here",
+            "text:element30000:0": "Foobar",
+            "text:element300000:0": "Killroy was here"
         };
 
         return {
