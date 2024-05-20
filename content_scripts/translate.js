@@ -55,13 +55,6 @@
         console.log(errMsg);// TODO: consider more advanced error logging
     };// end const logError = (errMsg) =>
 
-    const formatJSON = (obj) =>
-    {
-        const formattedEntries = Object.entries(obj).map(([k, v]) => `"${k}": "${v}"`);
-
-        return `{${formattedEntries.join(", ")}}`;
-    };// end formatJSON
-
     const isOnlyWhitespace = (str) => str.trim().length === 0;
 
     let __GET_ELEMENT_UID_COUNT = 0;
@@ -155,7 +148,7 @@ sentence-wise grammar of the target language while still providing an adequate t
 unit of text, as many of these text nodes will be the anchor text of hyperlinks.
 
 """
-${formatJSON(textTable)}
+${JSON.stringify(textTable)}
 """`;// TODO: implement non-stub
         // const translationTable = queryLLM({
         //     textTable, targetLanguage, apiConfig, formatPrompt
