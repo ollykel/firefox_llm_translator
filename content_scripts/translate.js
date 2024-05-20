@@ -198,11 +198,9 @@ ${JSON.stringify(textTable)}
 
     const translateElement = ({ element, targetLanguage, apiConfig }) =>
     {
-        console.log(`Calling generateTranslationTable(element: ${element}, targetLanguage: ${targetLanguage})...`);// TODO: remove debug
         const translationTable = generateTranslationTable({
           element, targetLanguage, apiConfig
         });
-        console.log('Finished generateTranslationTable');// TODO: remove debug
 
         const visitElem = (elem) =>
         {
