@@ -119,7 +119,7 @@
         };
     };// end makeElemVisitor
 
-    const generateTranslationTable = ({ element, targetLanguage, apiEndpoint, apiKey }) =>
+    const generateTranslationTable = ({ element, targetLanguage, apiConfig }) =>
     {
         const visitElem = (elem) =>
         {
@@ -153,13 +153,13 @@ Return the response as a json object which maps each key in the original json ob
 ${formatJSON(textTable)}
 """`;// TODO: implement non-stub
         const translationTable = queryLLM({
-            textTable, targetLanguage, apiEndpoint, apiKey, formatPrompt
+            textTable, targetLanguage, apiConfig, formatPrompt
         });
 
         return translationTable;
     };// end generateTranslationTable
 
-    const queryAPI = ({ promptStr, apiEndpoint, apiKey }) =>
+    const queryAPI = ({ promptStr, apiConfig }) =>
     {
         // TODO: implement non-stub
         const body = ({
@@ -174,10 +174,10 @@ ${formatJSON(textTable)}
         });
     };// end queryAPI
     
-    const queryLLM = ({ textTable, targetLanguage, apiEndpoint, apiKey, formatPrompt }) =>
+    const queryLLM = ({ textTable, targetLanguage, apiConfig, formatPrompt }) =>
     {
         const promptStr = formatPrompt({ textTable, targetLanguage });
-        const response = queryAPI({ promptStr, apiEndpoint, apiKey });
+        const response = queryAPI({ promptStr, apiConfig });
 
         if (response.hasError())
         {
@@ -190,10 +190,10 @@ ${formatJSON(textTable)}
         }
     };// end queryLLM
 
-    const translateElement = ({ element, targetLanguage, apiEndpoint, apiKey }) =>
+    const translateElement = ({ element, targetLanguage, apiConfig }) =>
     {
         // const translationTable = generateTranslationTable({
-        //   element, targetLanguage, apiEndpoint, apiKey
+        //   element, targetLanguage, apiConfig
         // });
         const translationTable = {
           "text::element0::0": "Foobar",
@@ -227,13 +227,12 @@ ${formatJSON(textTable)}
         visitElem(element);
     };// end translateElement
     
-    const translatePage = ({ targetLanguage, apiEndpoint, apiKey }) =>
+    const translatePage = ({ targetLanguage, apiConfig }) =>
     {
         translateElement({
             element: document.body,
             targetLanguage,
-            apiEndpoint,
-            apiKey
+            apiConfig
         });
     };// end translateDocument
 

@@ -3,6 +3,11 @@
 const apiEndpoint = 'https://api.example.com/translate';// TODO: implement non-mock
 const apiKey = 'XXXX';// TODO: implement non-mock
 
+const apiConfig = {
+    apiEndpoint,
+    apiKey
+};// TODO: implement non-mock
+
 const getFormValues = (form) =>
 {
     const inputs = form.elements;
@@ -45,8 +50,7 @@ const addSubmitListener = () =>
               command: "translatePage",
               parameters: {
                   targetLanguage,
-                  apiEndpoint,
-                  apiKey
+                  apiConfig
               }
             });
         };// end triggerTranslatePage
