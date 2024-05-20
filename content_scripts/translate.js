@@ -138,7 +138,7 @@
           {
             const subTable = visitElem(childNode);
 
-            textTable = ({ ...textTable, ...subTable });
+            textTable = { ...textTable, ...subTable };
           }// end for (let childNode of elemVisitor.getElemNodes())
 
           return textTable;
@@ -152,9 +152,17 @@ Return the response as a json object which maps each key in the original json ob
 """
 ${formatJSON(textTable)}
 """`;// TODO: implement non-stub
-        const translationTable = queryLLM({
-            textTable, targetLanguage, apiConfig, formatPrompt
-        });
+        // const translationTable = queryLLM({
+        //     textTable, targetLanguage, apiConfig, formatPrompt
+        // });
+
+        const translationTable = Object.keys(textTable).reduce(
+            (accum, k, i) => {
+                accum[k] = (i % 2 === 0 ? "Foobar" : "Killroy was here")
+                return accum;
+            },
+            {}
+        );// TODO: implement non-stub
 
         return translationTable;
     };// end generateTranslationTable
@@ -192,19 +200,11 @@ ${formatJSON(textTable)}
 
     const translateElement = ({ element, targetLanguage, apiConfig }) =>
     {
-        // const translationTable = generateTranslationTable({
-        //   element, targetLanguage, apiConfig
-        // });
-        const translationTable = {
-          "text::element0::0": "Foobar",
-          "text::element1::0": "Killroy was here",
-          "text::element10::0": "Foobar",
-          "text::element10::1": "Killroy was here",
-          "text::element100::0": "Foobar",
-          "text::element100::1": "Killroy was here",
-          "text::element1000::0": "Foobar",
-          "text::element1111::0": "Killroy was here"
-        };// end TODO: replace mock
+        console.log(`Calling generateTranslationTable(element: ${element}, targetLanguage: ${targetLanguage})...`);// TODO: remove debug
+        const translationTable = generateTranslationTable({
+          element, targetLanguage, apiConfig
+        });
+        console.log('Finished generateTranslationTable');// TODO: remove debug
 
         const visitElem = (elem) =>
         {
