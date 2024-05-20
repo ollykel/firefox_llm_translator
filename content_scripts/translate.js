@@ -62,6 +62,27 @@
         return `{${formattedEntries.join(", ")}}`;
     };// end formatJSON
 
+    const isOnlyWhitespace = (str) => str.trim().length === 0;
+
+    let __GET_ELEMENT_UID_COUNT = 0;
+    const getElementUID = (element) =>
+    {
+        const   ELEMENT_UID_ATTR_NAME   = 'llm_autotranslate_uid';
+
+        if (element.hasAttribute(ELEMENT_UID_ATTR_NAME))
+        {
+            return element.getAttribute(ELEMENT_UID_ATTR_NAME);
+        }
+        else
+        {
+            const out = `element${__GET_ELEMENT_UID_COUNT}`;
+
+            element.setAttribute(ELEMENT_UID_ATTR_NAME, out);
+            ++__GET_ELEMENT_UID_COUNT;
+            return out;
+        }
+    };// end getElementUID
+
     const makeElemVisitor = (element) =>
     {
         const   TEXT_NODE_TYPE  = 3;
@@ -79,11 +100,13 @@
         for (let i = 0; i < element.childNodes.length; ++i)
         {
             const currNode = element.childNodes[i];
-
             if (currNode.nodeType === TEXT_NODE_TYPE)
             {
+                const elemId = getElementUID(element);
+                const id = `text::${elemId}::${i}`;
+
                 textNodes.push({
-                    "getUniqueID": () => "text0000",// TODO: implement non-stub
+                    "getUniqueID": () => id,
                     "getText": () => currNode.textContent,
                     "setText": (newText) => { currNode.textContent = newText; }
                 });
@@ -173,8 +196,10 @@ ${formatJSON(textTable)}
         //   element, targetLanguage, apiEndpoint, apiKey
         // });
         const translationTable = {
-          "text0000": "Foobar",
-          "text0001": "Killroy was here"
+          "text::element0::0": "Foobar",
+          "text::element1::0": "Killroy was here",
+          "text::element1000::0": "Foobar",
+          "text::element1111::0": "Killroy was here"
         };// end TODO: replace mock
 
         const visitElem = (elem) =>
