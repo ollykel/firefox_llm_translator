@@ -66,44 +66,59 @@
     {
         const   TEXT_NODE_TYPE  = 3;
 
-        const childNodes = element.children;
-        const textNodes = element.childNodes
-            .filter((node) => node.nodeType === TEXT_NODE_TYPE)
-            .map((textNode) => ({
-                "getUniqueID": () => "text0000",// TODO: implement non-stub
-                "getText": () => textNode.textContent,
-                "setText": (newText) => { textNode.textContent = newText; }
-        }));
+        let childNodes = [];
+        let textNodes = [];
 
-        return ({
+        for (let i = 0; i < element.children.length; ++i)
+        {
+            const currChild = element.children[i];
+
+            childNodes.push(currChild);
+        }// end for (let i = 0; i < element.children.length; ++i)
+
+        for (let i = 0; i < element.childNodes.length; ++i)
+        {
+            const currNode = element.childNodes[i];
+
+            if (currNode.nodeType === TEXT_NODE_TYPE)
+            {
+                textNodes.push({
+                    "getUniqueID": () => "text0000",// TODO: implement non-stub
+                    "getText": () => currNode.textContent,
+                    "setText": (newText) => { currNode.textContent = newText; }
+                });
+            }
+        }// end for (let i = 0; i < element.childNodes.length; ++i)
+
+        return {
             "getTextNodes": () => textNodes,
             "getElemNodes": () => childNodes
-        });
+        };
     };// end makeElemVisitor
 
-    const generateTranslationTable = ({ element, targetLanguage }) =>
+    const generateTranslationTable = ({ element, targetLanguage, apiEndpoint, apiKey }) =>
     {
         const visitElem = (elem) =>
         {
-            const elemVisitor = makeElemVisitor(elem);
+          const elemVisitor = makeElemVisitor(elem);
 
-            let textTable = ({});
+          let textTable = {};
 
-            for (let textNode of elemVisitor.getTextNodes())
-            {
-                const id = textNode.getUniqueID();
+          for (let textNode of elemVisitor.getTextNodes())
+          {
+            const id = textNode.getUniqueID();
 
-                textTable[id] = textNode.getText();
-            }// end for (let textNode of elemVisitor.getTextNodes())
+            textTable[id] = textNode.getText();
+          }// end for (let textNode of elemVisitor.getTextNodes())
 
-            for (let childNode of elemVisitor.getElemNodes())
-            {
-                const subTable = visitElem(childNode);
+          for (let childNode of elemVisitor.getElemNodes())
+          {
+            const subTable = visitElem(childNode);
 
-                textTable = ({ ...textTable, ...subTable });
-            }// end for (let childNode of elemVisitor.getElemNodes())
+            textTable = ({ ...textTable, ...subTable });
+          }// end for (let childNode of elemVisitor.getElemNodes())
 
-            return textTable;
+          return textTable;
         };// end visitElem
 
         const textTable = visitElem(element);
@@ -152,33 +167,54 @@ ${formatJSON(textTable)}
         }
     };// end queryLLM
 
-    const translateElement = (element, targetLanguage) =>
+    const translateElement = ({ element, targetLanguage }) =>
     {
-        const translationTable = generateTranslationTable(element, targetLanguage);
+        const apiEndpoint = 'https://www.example.com/api';// TODO: implement non-mock
+        const apiKey = 'XXX';// TODO: implement non-mock
+        // const translationTable = generateTranslationTable({
+        //   element, targetLanguage, apiEndpoint, apiKey
+        // });
+        const translationTable = {
+          "text0000": "Foobar",
+          "text0001": "Killroy was here"
+        };// end TODO: replace mock
 
         const visitElem = (elem) =>
         {
-            const elemVisitor = makeElemVisitor(elem);
+          const elemVisitor = makeElemVisitor(elem);
 
-            for (const textNode of elemVisitor.getTextNodes())
-            {
-                const id = testNode.getUniqueID();
+          for (const textNode of elemVisitor.getTextNodes())
+          {
+              const id = textNode.getUniqueID();
 
-                if (id in translationTable)
-                {
-                    const newText = translationTable[id];
+              if (id in translationTable)
+              {
+                const newText = translationTable[id];
 
-                    testNode.setText(newText);
-                }
-            }// end for (const textNode of elemVisitor.getTextNodes())
+                textNode.setText(newText);
+              }
+          }// end for (const textNode of elemVisitor.getTextNodes())
 
-            for (const elem of elemVisitor.getElemNodes())
-            {
-                visitElem(elem);
-            }// end for (const elem of elemVisitor.getElemNodes())
+          for (const elem of elemVisitor.getElemNodes())
+          {
+              visitElem(elem);
+          }// end for (const elem of elemVisitor.getElemNodes())
         };// end visitElem
 
         visitElem(element);
     };// end translateElement
+    
+    const translatePage = ({ targetLanguage }) =>
+    {
+        translateElement({ element: document.body, targetLanguage });
+    };// end translateDocument
+
+    browser.runtime.onMessage.addListener((message) =>
+    {
+      if (message.command === 'translatePage')
+      {
+        translatePage(message.parameters);
+      }
+    });
 }
 )();
