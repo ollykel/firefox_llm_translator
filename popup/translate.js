@@ -75,6 +75,21 @@ const addEventListeners = () =>
             .then(triggerMessage)
             .catch(reportError);
     });
+
+    document.getElementById('display-translated-page').addEventListener('click', (ev) =>
+    {
+        const triggerMessage = (tabs) =>
+        {
+            browser.tabs.sendMessage(tabs[0].id, {
+              command: "displayTranslatedPage"
+            });
+        };// end triggerMessage
+
+        browser.tabs
+            .query({ active: true, currentWindow: true })
+            .then(triggerMessage)
+            .catch(reportError);
+    });
 };// end addEventListeners
 
 const reportExecuteScriptError = (error) =>

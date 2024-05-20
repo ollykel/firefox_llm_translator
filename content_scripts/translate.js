@@ -310,6 +310,26 @@ ${JSON.stringify(textTable)}
         visitElem(document.body);
     };// end displayOriginalPage
 
+    const displayTranslatedPage = () =>
+    {
+        const visitElem = (elem) =>
+        {
+            const visitor = makeElemVisitor(elem);
+
+            for (const textNode of visitor.getTextNodes())
+            {
+                textNode.displayTranslated();
+            }// end for (const textNode of visitor.getTextNodes())
+
+            for (const child of visitor.getElemNodes())
+            {
+                visitElem(child);
+            }// end for (const child of visitor.getElemNodes())
+        };// end visitElem
+
+        visitElem(document.body);
+    };// end displayTranslatedPage
+
     browser.runtime.onMessage.addListener((message) =>
     {
         if (message.command === 'translatePage')
@@ -319,6 +339,10 @@ ${JSON.stringify(textTable)}
         else if (message.command === 'displayOriginalPage')
         {
             displayOriginalPage();
+        }
+        else if (message.command === 'displayTranslatedPage')
+        {
+            displayTranslatedPage();
         }
     });
 }
