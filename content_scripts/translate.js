@@ -198,6 +198,10 @@ ${formatJSON(textTable)}
         const translationTable = {
           "text::element0::0": "Foobar",
           "text::element1::0": "Killroy was here",
+          "text::element10::0": "Foobar",
+          "text::element10::1": "Killroy was here",
+          "text::element100::0": "Foobar",
+          "text::element100::1": "Killroy was here",
           "text::element1000::0": "Foobar",
           "text::element1111::0": "Killroy was here"
         };// end TODO: replace mock
