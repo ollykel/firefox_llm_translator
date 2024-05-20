@@ -29,8 +29,13 @@ const getFormValues = (form) =>
     return output;
 };// end getFormValues
 
-const addSubmitListener = () =>
+const addEventListeners = () =>
 {
+    const reportError = (err) =>
+    {
+        console.log(`error encountered while triggering translate page: ${err}`);
+    };// end reportError
+        
     document.getElementById('translate-form').addEventListener("submit", (e) =>
     {
         e.preventDefault();
@@ -38,11 +43,6 @@ const addSubmitListener = () =>
         const form = e.target;
         const inputValues = getFormValues(form);
         const targetLanguage = inputValues['target-language'];
-        
-        const reportError = (err) =>
-        {
-            console.log(`error encountered while triggering translate page: ${err}`);
-        };// end reportError
         
         const triggerTranslatePage = (tabs) =>
         {
@@ -60,7 +60,22 @@ const addSubmitListener = () =>
           .then(triggerTranslatePage)
           .catch(reportError);
     });
-};// end addSubmitListener
+
+    document.getElementById('display-original-page').addEventListener('click', (ev) =>
+    {
+        const triggerMessage = (tabs) =>
+        {
+            browser.tabs.sendMessage(tabs[0].id, {
+              command: "displayOriginalPage"
+            });
+        };// end triggerMessage
+
+        browser.tabs
+            .query({ active: true, currentWindow: true })
+            .then(triggerMessage)
+            .catch(reportError);
+    });
+};// end addEventListeners
 
 const reportExecuteScriptError = (error) =>
 {
@@ -70,5 +85,5 @@ const reportExecuteScriptError = (error) =>
 // insert content script
 browser.tabs
   .executeScript({ file: "/content_scripts/translate.js" })
-  .then(addSubmitListener)
+  .then(addEventListeners)
   .catch(reportExecuteScriptError);

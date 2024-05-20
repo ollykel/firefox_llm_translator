@@ -290,12 +290,36 @@ ${JSON.stringify(textTable)}
         });
     };// end translateDocument
 
+    const displayOriginalPage = () =>
+    {
+        const visitElem = (elem) =>
+        {
+            const visitor = makeElemVisitor(elem);
+
+            for (const textNode of visitor.getTextNodes())
+            {
+                textNode.displayOrig();
+            }// end for (const textNode of visitor.getTextNodes())
+
+            for (const child of visitor.getElemNodes())
+            {
+                visitElem(child);
+            }// end for (const child of visitor.getElemNodes())
+        };// end visitElem
+
+        visitElem(document.body);
+    };// end displayOriginalPage
+
     browser.runtime.onMessage.addListener((message) =>
     {
-      if (message.command === 'translatePage')
-      {
-        translatePage(message.parameters);
-      }
+        if (message.command === 'translatePage')
+        {
+          translatePage(message.parameters);
+        }
+        else if (message.command === 'displayOriginalPage')
+        {
+            displayOriginalPage();
+        }
     });
 }
 )();
