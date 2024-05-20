@@ -146,8 +146,13 @@
 
         const textTable = visitElem(element);
         const formatPrompt = ({ textTable, targetLanguage }) => 
-`Please translate the json object provided below into the following language: ${targetLanguage}.
+`
+Please translate the json object provided below into the following language: ${targetLanguage}.
+
 Return the response as a json object which maps each key in the original json object to the corresponding translation.
+Keep in mind that all of this text belongs to a single webpage. Try to translate the text in a way that respects the
+sentence-wise grammar of the target language while still providing an adequate translation of each individual
+unit of text, as many of these text nodes will be the anchor text of hyperlinks.
 
 """
 ${formatJSON(textTable)}
