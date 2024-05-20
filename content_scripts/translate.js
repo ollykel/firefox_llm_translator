@@ -76,9 +76,41 @@
         }
     };// end getElementUID
 
+    // format: { NODE_ID: { translatedText: <str>, origText: <str> }}
+    let TEXT_NODE_WRAPPERS = {};
+
     const makeElemVisitor = (element) =>
     {
         const   TEXT_NODE_TYPE  = 3;
+
+        const getTextNodeWrapper = (elem, index, textNode) =>
+        {
+            const elemId = getElementUID(elem);
+            const uid = `text:${elemId}:${index}`;
+
+            if (uid in TEXT_NODE_WRAPPERS)
+            {
+                return TEXT_NODE_WRAPPERS[uid];
+            }
+            else
+            {
+                // init origText and translatedText both to original text content
+                const origText = ("" + textNode.textContent);
+                let translatedText = ("" + textNode.textContent);
+
+                const newWrapper = {
+                    "getUniqueID": () => uid,
+                    "getOrigText": () => origText,
+                    "getTranslatedText": () => translatedText,
+                    "setTranslatedText": (newText) => { translatedText = newText; },
+                    "displayTranslated": () => { textNode.textContent = translatedText; },
+                    "displayOrig": () => { textNode.textContent = origText; }
+                };
+
+                TEXT_NODE_WRAPPERS[uid] = newWrapper;
+                return newWrapper;
+            }
+        };// end getTextNodeWrapper
 
         let childNodes = [];
         let textNodes = [];
@@ -95,14 +127,7 @@
             const currNode = element.childNodes[i];
             if (currNode.nodeType === TEXT_NODE_TYPE)
             {
-                const elemId = getElementUID(element);
-                const id = `text:${elemId}:${i}`;
-
-                textNodes.push({
-                    "getUniqueID": () => id,
-                    "getText": () => ("" + currNode.textContent),
-                    "setText": (newText) => { currNode.textContent = newText; }
-                });
+                textNodes.push(getTextNodeWrapper(element, i, currNode));
             }
         }// end for (let i = 0; i < element.childNodes.length; ++i)
 
@@ -135,11 +160,11 @@
                 for (let textNode of elemVisitor.getTextNodes())
                 {
                     const id = textNode.getUniqueID();
-                    const text = textNode.getText();
+                    const origText = textNode.getOrigText();
 
-                    if (!isOnlyWhitespace(text))
+                    if (!isOnlyWhitespace(origText))
                     {
-                        textTable[id] = text;
+                        textTable[id] = origText;
                     }
                 }// end for (let textNode of elemVisitor.getTextNodes())
             }
@@ -182,8 +207,18 @@ ${JSON.stringify(textTable)}
         console.log(`promptStr approx word count: ${promptStr.split(/\s*/).length}`);// TODO: remove debug
         // TODO: implement non-stub
         const body = {
-            "text0000": "Foobar",
-            "text0001": "Killroy was here"
+            "text:element1:0": "Foobar",
+            "text:element10:0": "Killroy was here",
+            "text:element100:0": "Foobar",
+            "text:element1000:0": "Killroy was here",
+            "text:element10000:0": "Foobar",
+            "text:element100000:0": "Killroy was here",
+            "text:element2:0": "Foobar",
+            "text:element20:0": "Killroy was here",
+            "text:element200:0": "Foobar",
+            "text:element2000:0": "Killroy was here",
+            "text:element20000:0": "Foobar",
+            "text:element200000:0": "Killroy was here"
         };
 
         return {
@@ -226,7 +261,8 @@ ${JSON.stringify(textTable)}
               {
                 const newText = translationTable[id];
 
-                textNode.setText(newText);
+                textNode.setTranslatedText(newText);
+                textNode.displayTranslated();
               }
           }// end for (const textNode of elemVisitor.getTextNodes())
 
