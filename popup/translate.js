@@ -43,6 +43,7 @@ const addEventListeners = () =>
         const form = e.target;
         const inputValues = getFormValues(form);
         const targetLanguage = inputValues['target-language'];
+        const characterLimit = Number(inputValues['character-limit']);
         
         const triggerTranslatePage = (tabs) =>
         {
@@ -50,6 +51,7 @@ const addEventListeners = () =>
               command: "translatePage",
               parameters: {
                   targetLanguage,
+                  characterLimit,
                   apiConfig
               }
             });

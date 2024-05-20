@@ -9,7 +9,9 @@
     <h1>Translate LLM</h1>
     <form id="translate-form">
       <label for="target-language">Target Language: </label>
-      <input name="target-language" type="text" />
+      <input name="target-language" type="text" required />
+      <label for="character-limit">Character Limit: </label>
+      <input name="character-limit" type="number" value="500" min="32" required />
       <button type="submit">Translate</button>
     </form>
     <button id="display-original-page">Show Original</button>
