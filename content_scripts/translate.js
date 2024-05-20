@@ -96,11 +96,11 @@
             if (currNode.nodeType === TEXT_NODE_TYPE)
             {
                 const elemId = getElementUID(element);
-                const id = `text::${elemId}::${i}`;
+                const id = `text:${elemId}:${i}`;
 
                 textNodes.push({
                     "getUniqueID": () => id,
-                    "getText": () => currNode.textContent,
+                    "getText": () => ("" + currNode.textContent),
                     "setText": (newText) => { currNode.textContent = newText; }
                 });
             }
@@ -112,35 +112,53 @@
         };
     };// end makeElemVisitor
 
+    // consider children of all following elements for translation
+    const ELEMS_TO_TRANSLATE_SET = {
+        'p': true,
+        'table': true,
+        'h1': true,
+        'h2': true,
+        'h3': true,
+        'h4': true
+    };// end ELEMS_TO_TRANSLATE_SET
+
     const generateTranslationTable = ({ element, targetLanguage, apiConfig }) =>
     {
-        const visitElem = (elem) =>
+        const visitElem = (elem, shouldTranslate) =>
         {
-          const elemVisitor = makeElemVisitor(elem);
+            const elemVisitor = makeElemVisitor(elem);
 
-          let textTable = {};
+            let textTable = {};
 
-          for (let textNode of elemVisitor.getTextNodes())
-          {
-            const id = textNode.getUniqueID();
+            if (shouldTranslate)
+            {
+                for (let textNode of elemVisitor.getTextNodes())
+                {
+                    const id = textNode.getUniqueID();
+                    const text = textNode.getText();
 
-            textTable[id] = textNode.getText();
-          }// end for (let textNode of elemVisitor.getTextNodes())
+                    if (!isOnlyWhitespace(text))
+                    {
+                        textTable[id] = text;
+                    }
+                }// end for (let textNode of elemVisitor.getTextNodes())
+            }
 
-          for (let childNode of elemVisitor.getElemNodes())
-          {
-            const subTable = visitElem(childNode);
+            for (let childNode of elemVisitor.getElemNodes())
+            {
+                const translateNext = shouldTranslate
+                    || (childNode.nodeName.toLowerCase() in ELEMS_TO_TRANSLATE_SET);
+                const subTable = visitElem(childNode, translateNext);
 
-            textTable = { ...textTable, ...subTable };
-          }// end for (let childNode of elemVisitor.getElemNodes())
+                textTable = { ...textTable, ...subTable };
+            }// end for (let childNode of elemVisitor.getElemNodes())
 
-          return textTable;
+            return textTable;
         };// end visitElem
 
-        const textTable = visitElem(element);
-        const formatPrompt = ({ textTable, targetLanguage }) => 
-`
-Please translate the json object provided below into the following language: ${targetLanguage}.
+        const textTable = visitElem(element, false);// don't translate until appropriate parent element visited
+        const promptStr =
+`Please translate the json object provided below into the following language: ${targetLanguage}.
 
 Return the response as a json object which maps each key in the original json object to the corresponding translation.
 Keep in mind that all of this text belongs to a single webpage. Try to translate the text in a way that respects the
@@ -150,45 +168,39 @@ unit of text, as many of these text nodes will be the anchor text of hyperlinks.
 """
 ${JSON.stringify(textTable)}
 """`;// TODO: implement non-stub
-        // const translationTable = queryLLM({
-        //     textTable, targetLanguage, apiConfig, formatPrompt
-        // });
-
-        const translationTable = Object.keys(textTable).reduce(
-            (accum, k, i) => {
-                accum[k] = (i % 2 === 0 ? "Foobar" : "Killroy was here")
-                return accum;
-            },
-            {}
-        );// TODO: implement non-stub
+        const translationTable = queryLLM({
+            textTable, targetLanguage, apiConfig, promptStr
+        });
 
         return translationTable;
     };// end generateTranslationTable
 
     const queryAPI = ({ promptStr, apiConfig }) =>
     {
+        console.log(`promptStr: ${promptStr}`);// TODO: remove debug
+        console.log(`promptStr length: ${promptStr.length}`);// TODO: remove debug
+        console.log(`promptStr approx word count: ${promptStr.split(/\s*/).length}`);// TODO: remove debug
         // TODO: implement non-stub
-        const body = ({
+        const body = {
             "text0000": "Foobar",
             "text0001": "Killroy was here"
-        });
+        };
 
-        return ({
+        return {
             "hasError": () => false,// TODO: implement non-stub
             "getError": () => "",// TODO: implement non-stub
             "getBody": () => ({ ...body })
-        });
+        };
     };// end queryAPI
     
-    const queryLLM = ({ textTable, targetLanguage, apiConfig, formatPrompt }) =>
+    const queryLLM = ({ textTable, targetLanguage, apiConfig, promptStr }) =>
     {
-        const promptStr = formatPrompt({ textTable, targetLanguage });
         const response = queryAPI({ promptStr, apiConfig });
 
         if (response.hasError())
         {
             logError(response.getError());
-            return ({});
+            return {};
         }
         else
         {
