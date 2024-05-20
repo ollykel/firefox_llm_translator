@@ -167,10 +167,8 @@ ${formatJSON(textTable)}
         }
     };// end queryLLM
 
-    const translateElement = ({ element, targetLanguage }) =>
+    const translateElement = ({ element, targetLanguage, apiEndpoint, apiKey }) =>
     {
-        const apiEndpoint = 'https://www.example.com/api';// TODO: implement non-mock
-        const apiKey = 'XXX';// TODO: implement non-mock
         // const translationTable = generateTranslationTable({
         //   element, targetLanguage, apiEndpoint, apiKey
         // });
@@ -204,9 +202,14 @@ ${formatJSON(textTable)}
         visitElem(element);
     };// end translateElement
     
-    const translatePage = ({ targetLanguage }) =>
+    const translatePage = ({ targetLanguage, apiEndpoint, apiKey }) =>
     {
-        translateElement({ element: document.body, targetLanguage });
+        translateElement({
+            element: document.body,
+            targetLanguage,
+            apiEndpoint,
+            apiKey
+        });
     };// end translateDocument
 
     browser.runtime.onMessage.addListener((message) =>
