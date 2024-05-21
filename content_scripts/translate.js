@@ -53,7 +53,27 @@
     const logError = (errMsg) =>
     {
         console.log(errMsg);// TODO: consider more advanced error logging
+        alert(`Error: ${errMsg}`);
     };// end const logError = (errMsg) =>
+
+    const extractObj = (obj, ...fields) =>
+    {
+        let currObj = obj;
+
+        for (let field of fields)
+        {
+            if (currObj.hasOwnProperty(field))
+            {
+                currObj = currObj[field];
+            }
+            else
+            {
+                return null;
+            }
+        }// end for (let field of fields)
+
+        return currObj;
+    };// end extractObj
 
     const isOnlyWhitespace = (str) => str.trim().length === 0;
 
@@ -140,6 +160,8 @@
     // consider children of all following elements for translation
     const ELEMS_TO_TRANSLATE_SET = {
         'p': true,
+        'a': true,
+        'li': true,
         'table': true,
         'h1': true,
         'h2': true,
@@ -147,7 +169,7 @@
         'h4': true
     };// end ELEMS_TO_TRANSLATE_SET
 
-    const generateTranslationTable = ({ element, targetLanguage, characterLimit, apiConfig }) =>
+    const generateTranslationTable = async ({ element, targetLanguage, characterLimit, apiConfig }) =>
     {
         const visitElem = (elem, shouldTranslate) =>
         {
@@ -204,15 +226,23 @@
         const promptStr =
 `Please translate the json object provided below into the following language: ${targetLanguage}.
 
-Return the response as a json object which maps each key in the original json object to the corresponding translation.
-Keep in mind that all of this text belongs to a single webpage. Try to translate the text in a way that respects the
-sentence-wise grammar of the target language while still providing an adequate translation of each individual
-unit of text, as many of these text nodes will be the anchor text of hyperlinks.
+Return the response as a json object which maps each key in the original json
+object to the corresponding translation, with the context of neighboring values
+taken into account.
+
+Keep in mind that all of this text belongs to a single webpage. Try to translate
+the text in a way that respects the original meaning and sentence-wise grammar
+of the target language while still providing an adequate translation of each
+individual unit of text, as many of these text nodes will be the anchor text of
+hyperlinks.
+
+Preserve the whitespace and extraneous characters of the original strings
+whenever possible.
 
 """
 ${JSON.stringify(textTable)}
 """`;// TODO: implement non-stub
-        const translationTable = queryLLM({
+        const translationTable = await queryLLM({
             textTable, targetLanguage, apiConfig, promptStr
         });
 
@@ -221,9 +251,6 @@ ${JSON.stringify(textTable)}
 
     const queryAPIStub = ({ promptStr, apiConfig }) =>
     {
-        console.log(`promptStr: ${promptStr}`);// TODO: remove debug
-        console.log(`promptStr length: ${promptStr.length}`);// TODO: remove debug
-        console.log(`promptStr approx word count: ${promptStr.split(/\s*/).length}`);// TODO: remove debug
         // TODO: implement non-stub
         const body = {
             "text:element1:0": "Foobar",
@@ -252,10 +279,89 @@ ${JSON.stringify(textTable)}
             "getBody": () => ({ ...body })
         };
     };// end queryAPIStub
-    
-    const queryLLM = ({ textTable, targetLanguage, apiConfig, promptStr }) =>
+
+    const queryAPIOpenAI = async ({ promptStr, apiConfig }) =>
     {
-        const response = queryAPIStub({ promptStr, apiConfig });
+        const { endpoint, key, model, role, temperature } = apiConfig;
+
+        const requestData = {
+            model,
+            messages: [{ role, content: promptStr }],
+            temperature
+        };
+        const requestStr = JSON.stringify(requestData);
+
+        const request =
+        {
+            method: 'POST',
+            mode: "cors",
+            cache: "no-cache",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${key}`
+            },
+            redirect: "follow",
+            body: requestStr
+        };
+        const response = await fetch(endpoint, request);
+
+        let error = null;
+        let errorFlag = false;
+        let body = {};
+
+        const respBody = await response.json();
+        const respData = extractObj(respBody, 'choices', 0);
+
+        if (respData === null)
+        {
+            error = "could not parse api response";
+            errorFlag = true;
+        }
+        else
+        {
+            const finishReason = (respData['finish_reason'] || 'none_given').toLowerCase();
+
+            if (finishReason !== 'stop')
+            {
+                error = `reason given for stopping: "${finishReason}"`;
+                errorFlag = true;
+            }
+            else
+            {
+                const contentText = extractObj(respData, 'message', 'content');
+
+                if (contentText === null)
+                {
+                    error = 'content could not be extracted from api response';
+                    errorFlag = true;
+                }
+                else
+                {
+                    try
+                    {
+                        body = JSON.parse(contentText);
+                    }
+                    catch (err)
+                    {
+                        error = `error parsing response content: ${err}`;
+                        hasError = true;
+                    }
+                }
+            }
+        }
+
+        return {
+            "hasError": () => errorFlag,
+            "getError": () => error,
+            "getBody": () => ({ ...body })
+        };
+    };// end queryAPIOpenAI
+    
+    const queryLLM = async ({ textTable, targetLanguage, apiConfig, promptStr }) =>
+    {
+        const response = await queryAPIOpenAI({ promptStr, apiConfig });
+        // const response = queryAPIStub({ promptStr, apiConfig });// stub for
+        // testing
 
         if (response.hasError())
         {
@@ -268,9 +374,9 @@ ${JSON.stringify(textTable)}
         }
     };// end queryLLM
 
-    const translateElement = ({ element, targetLanguage, characterLimit, apiConfig }) =>
+    const translateElement = async ({ element, targetLanguage, characterLimit, apiConfig }) =>
     {
-        const translationTable = generateTranslationTable({
+        const translationTable = await generateTranslationTable({
           element, targetLanguage, characterLimit, apiConfig
         });
 

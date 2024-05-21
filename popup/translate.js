@@ -1,12 +1,30 @@
 // Inject the content script at popup load time.
 
-const apiEndpoint = 'https://api.example.com/translate';// TODO: implement non-mock
-const apiKey = 'XXXX';// TODO: implement non-mock
+const apiConfigBase = {
+    endpoint: 'https://api.openai.com/v1/chat/completions',
+    model: "gpt-3.5-turbo",
+    role: "user",
+    temperature: 0.7
+};// TODO: move hard-coded elements into config
 
-const apiConfig = {
-    apiEndpoint,
-    apiKey
-};// TODO: implement non-mock
+const extractObj = (obj, ...fields) =>
+{
+    let currObj = obj;
+
+    for (let field of fields)
+    {
+        if (currObj.hasOwnProperty(field))
+        {
+            currObj = currObj[field];
+        }
+        else
+        {
+            return null;
+        }
+    }// end for (let field of fields)
+
+    return currObj;
+};// end extractObj
 
 const getFormValues = (form) =>
 {
@@ -42,6 +60,7 @@ const addEventListeners = () =>
         
         const form = e.target;
         const inputValues = getFormValues(form);
+        const apiKey = inputValues['api-key'];
         const targetLanguage = inputValues['target-language'];
         const characterLimit = Number(inputValues['character-limit']);
         
@@ -52,7 +71,7 @@ const addEventListeners = () =>
               parameters: {
                   targetLanguage,
                   characterLimit,
-                  apiConfig
+                  apiConfig: { ...apiConfigBase, key: apiKey }
               }
             });
         };// end triggerTranslatePage
@@ -100,7 +119,18 @@ const reportExecuteScriptError = (error) =>
 };// end reportExecuteScriptError
 
 // insert content script
+const injectScript = (tabs) =>
+{
+    browser.scripting
+      .executeScript({
+          target: { tabId: tabs[0].id },
+          files: ["/content_scripts/translate.js"]
+      })
+      .then(addEventListeners)
+      .catch(reportExecuteScriptError);
+};// end injectScript
+
 browser.tabs
-  .executeScript({ file: "/content_scripts/translate.js" })
-  .then(addEventListeners)
-  .catch(reportExecuteScriptError);
+    .query({ active: true, currentWindow: true })
+    .then(injectScript)
+    .catch(reportExecuteScriptError);

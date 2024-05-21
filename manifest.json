@@ -1,12 +1,21 @@
 {
-	"manifest_version": 2,
+	"manifest_version": 3,
   "name": "LLM Autotranslate",
   "version": "0.1",
   "description": "Automatically translate the content of web pages using the API of an LLM such as ChatGPT.",
 
-  "permissions": ["activeTab"],
+  "host_permissions": [
+    "*://api.openai.com/*"
+  ],
 
-  "browser_action": {
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "scripting",
+    "webRequest"
+  ],
+
+  "action": {
     "default_title": "LLM Autotranslate",
     "default_popup": "popup/translate.html"
   },
