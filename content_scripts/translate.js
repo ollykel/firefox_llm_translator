@@ -162,6 +162,80 @@
         };
     };// end makeElemVisitor
 
+    const getTargetElemBatches = (() => {
+        const TARGET_ELEMS_SET = {
+            'p': true,
+            'span': true,
+            'a': true,
+            'li': true,
+            'table': true,
+            'h1': true,
+            'h2': true,
+            'h3': true,
+            'h4': true,
+            'button': true,
+            'label': true
+        };// end TARGET_ELEMS_SET
+
+        const collectTargetElems = (element) =>
+        {
+            const elemTag = element.tagName.toLowerCase();
+
+            if (elemTag in TARGET_ELEMS_SET)
+            {
+                return [element];
+            }
+            else
+            {
+                let out = [];
+
+                for (const elem of element.children)
+                {
+                    out.push(...collectTargetElems(elem));
+                }// end for (const elem of element.children)
+
+                return out;
+            }
+        };// end collectTargetElems
+
+        const makeElemBatches = (elements, batchCharCount) =>
+        {
+            let currBatch = {};
+            let currCharCount = 0;
+            let batches = [];
+
+            for (const elem of elements)
+            {
+                const elemUID = getElementUID(elem);
+                const elemContent = elem.innerHTML;
+                const nextCharCount = currCharCount + elemContent.length;
+
+                if (nextCharCount > batchCharCount)
+                {
+                    batches.push(currBatch);
+                    currBatch = {};
+                    currBatch[elemUID] = elemContent;
+                    currCharCount = elemContent.length;
+                }
+                else
+                {
+                    batch[elemUID] = elemContent;
+                }
+            }// end for (const elem of elements)
+
+            return batches;
+        };// end makeElemBatches
+
+        const getTargetElemBatches = ({ element, batchCharCount }) =>
+        {
+            const elemCollection = collectTargetElems(element);
+
+            return makeElemBatches(elemCollection, batchCharCount);
+        };// end getTargetElemBatches
+
+        return getTargetElemBatches;
+    })();
+
     // Partitions one single textTable (mapping of text node ids to text
     // content) into several textTables, each of which contains no more than
     // <batchCharCount> characters of text content.
