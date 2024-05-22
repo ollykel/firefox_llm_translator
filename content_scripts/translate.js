@@ -13,46 +13,25 @@
 
     window.hasRun = true;
 
-    // GLOBAL CONSTANTS
+    // === GLOBAL CONSTANTS ====================================================
+    //
+    // =========================================================================
     const   MAX_BATCH_CHAR_COUNT        = 2000;
+    
+    // New pipeline:
+    //  1. Recursively identify all target elements
+    //  2. Aggregate target elements into batches that match per-request
+    //  character count
+    //  3. Concurrently, for each element batch:
+    //      a. Request translation table from api
+    //      b. Upon receiving response:
+    //          1. If error, alert user
+    //          2. If valid, translate each element
+    //  4. Upon completion of all (3), alert user that translation is finished.
 
-    // Functions:
-    //  - translateElement(element, targetLanguage)
-    //      - generate a translationTable into the targetLanguage
-    //      - visit all children of the element recursively; for each text node:
-    //          - find text node's unique id
-    //          - if unique id found in translationTable, translate text node
-    //  - generateTranslationTable(element, targetLanguage) -> Translation Table (dict):
-    //      - init textMap: an empty map of text node ids to text strings
-    //      - recursively visit all children of the element; for each text node:
-    //          - generate a unique id
-    //          - add <id : text> pair to textMap
-    //      - generate a prompt for the LLM, consisting of:
-    //          - a prologue explaining the desired outcome (a json object
-    //          mapping the unique ids in textMap to the equivalent translations
-    //          in <targetLanguage>)
-    //          - the textMap, formatted appropriately
-    //      - send the prompt to the LLM API, utilizing:
-    //          - an API key
-    //          - the API endpoint url
-    //      - if API query resolved correctly:
-    //          - retrieve translationMap from the response
-    //          - return translationMap
-    //      - else:
-    //          - throw an exception explaining that the query could not be made
-    //  - replaceTextNode(origNode, translationTable) -> new text node with
-    //  translated text
-    //      - find unique identifier for origNode
-    //      - if unique identifier found:
-    //          - create a dom node that consists of:
-    //              - a wrapper node that identifies the node as a translation node
-    //              - inner text containing the text
-    //          - replace <origNode> with new dom node
-    //      - else:
-    //          - return <origNode>
-    //  - queryLLM(textTable<text id : origText>, targetLanguage, API endpoint, API key, formatPrompt):
-    //      -> translationTable<text id : translatedText>
-
+    // === Utility Functions ===================================================
+    //
+    // =========================================================================
     const logError = (errMsg) =>
     {
         console.log(errMsg);// TODO: consider more advanced error logging
