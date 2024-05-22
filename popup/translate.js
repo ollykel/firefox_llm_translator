@@ -113,6 +113,22 @@ const addEventListeners = () =>
     });
 };// end addEventListeners
 
+const notifyRequestProcessing = () =>
+{
+    const notifElem = document.getElementById('notif-request-processing');
+
+    console.log(`notifElem: ${notifElem}`);// TODO: remove debug
+    console.log(`notifElem style: ${notifElem.style.cssText}`);// TODO: remove debug
+    notifElem.style.setProperty('display', 'inline-block');
+};// end notifyRequestProcessing
+
+const notifyRequestProcessingFinished = () =>
+{
+    const notifElem = document.getElementById('notif-request-processing');
+
+    notifElem.style.removeProperty('display');
+};// end notifyRequestProcessingFinished
+
 const reportExecuteScriptError = (error) =>
 {
     console.log(`Translate popup script failed: ${error}`);
@@ -134,3 +150,15 @@ browser.tabs
     .query({ active: true, currentWindow: true })
     .then(injectScript)
     .catch(reportExecuteScriptError);
+
+browser.runtime.onMessage.addListener((message) =>
+{
+    if (message.command === 'notifyRequestProcessing')
+    {
+        notifyRequestProcessing();
+    }
+    else if (message.command === 'notifyRequestProcessingFinished')
+    {
+        notifyRequestProcessingFinished();
+    }
+});

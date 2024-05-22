@@ -77,6 +77,16 @@
 
     const isOnlyWhitespace = (str) => str.trim().length === 0;
 
+    const notifyRequestProcessing = () =>
+    {
+        browser.runtime.sendMessage({ command: "notifyRequestProcessing", });
+    };// end notifyRequestProcessing
+
+    const notifyRequestProcessingFinished = () =>
+    {
+        browser.runtime.sendMessage({ command: "notifyRequestProcessingFinished" });
+    };// end notifyRequestProcessingFinished
+
     let __GET_ELEMENT_UID_COUNT = 0;
     const getElementUID = (element) =>
     {
@@ -359,7 +369,9 @@ ${JSON.stringify(textTable)}
     
     const queryLLM = async ({ textTable, targetLanguage, apiConfig, promptStr }) =>
     {
+        notifyRequestProcessing();
         const response = await queryAPIOpenAI({ promptStr, apiConfig });
+        notifyRequestProcessingFinished();
         // const response = queryAPIStub({ promptStr, apiConfig });// stub for
         // testing
 
