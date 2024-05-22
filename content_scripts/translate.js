@@ -249,6 +249,75 @@
         return getTargetElemBatches;
     })();
 
+    const applyTranslationTable = (translationTable) =>
+    {
+        for (const [elemUID, translatedContent] of Object.entries(translationTable))
+        {
+            const elemVisitor = getElementByUID(elemUID);// TODO: implement elemVisitor
+
+            if (elemVisitor !== null)
+            {
+                elemVisitor.setTranslatedContent(translatedContent);
+                elemVisitor.displayTranslated();
+            }
+        }// end for (const [elemUID, translatedContent] of Object.entries(translationTable))
+    };// end applyTranslationTable
+
+    const translateElemBatches = (() => {
+        const formatPrompt = ({ elemBatch, targetLanguage }) =>
+        {
+            const batchStr = JSON.stringify(elemBatch);
+
+            return (
+`Please translate the values in the json object provided below from whatever the
+original language is into the following language: ${targetLanguage}.
+
+Each of the values is the content of an html element, which may or not contain
+nested html elements.  Return the response as a json object which maps each key
+in the original json object to the corresponding translation, with the context
+of neighboring values taken into account. Please do not modify the attributes of
+html tags.
+
+Requirements:
+    - Any html anchors encountered need to be replicated in the translation,
+    with the new hyperlink enclosing a stretch of text equivalent to the text
+    enclosed by the original hyperlink.
+    - Any whitespace and other non-lexical characters a the beginning and ending
+    of every content string must be preserved in the translated content string.
+
+"""
+${batchStr}
+"""`);// TODO: implement non-stub
+        };// end formatPrompt
+
+        const handleAPIResponse = (resp) =>
+        {
+            if (resp.hasError())
+            {
+                logError(resp.getError());
+            }
+            else
+            {
+                applyTranslationTable(resp.getBody());
+            }
+        };// end handleAPIResponse
+
+        const translateElemBatches = ({ elemBatches, apiConfig, targetLanguage }) =>
+        {
+            // concurrently query for translation tables, then translate
+            // elements on dom tree
+            for (const elemBatch of elemBatches)
+            {
+                const promptStr = formatPrompt({ elemBatch, targetLanguage });
+
+                queryAPIOpenAI({ promptStr, apiConfig })
+                    .then(handleAPIResponse);
+            }// end for (const elemBatch of elemBatches)
+        };// end translateElemBatches
+
+        return translateElemBatches;
+    })();
+
     // Partitions one single textTable (mapping of text node ids to text
     // content) into several textTables, each of which contains no more than
     // <batchCharCount> characters of text content.
