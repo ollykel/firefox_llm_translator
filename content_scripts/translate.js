@@ -82,11 +82,17 @@
         browser.runtime.sendMessage({ command: "notifyRequestProcessingFinished" });
     };// end notifyRequestProcessingFinished
 
-    const [getElementUID, getElementByUID] = (() => {
+    const {
+        getElementUID,
+        getElementByUID,
+        getElementVisitor,
+        getElementVisitorByUID
+    } = (() => {
         const   ELEMENT_UID_ATTR_NAME   = 'llm_autotranslate_uid';
 
         let elementUIDCount = 0;
         let elemUIDMap = {};
+        let uidToVisitorMap = {};
 
         const getElementUID = (element) =>
         {
@@ -111,7 +117,46 @@
             return elemUIDMap[uid];
         };// end getElementByUID
 
-        return [getElementUID, getElementByUID];
+        const getElementVisitor = (element) =>
+        {
+            const uid = getElementUID(element);
+
+            if (uid in uidToVisitorMap)
+            {
+                return uidToVisitorMap[uid];
+            }
+            else
+            {
+                const origContent = element.innerHTML;
+                let translatedContent = element.innerHTML;
+
+                const visitor = {
+                    "getUID": () => uid,
+                    "getOrigContent": () => origContent,
+                    "getTranslatedContent": () => translatedText,
+                    "setTranslatedContent": (newContent) => { translatedContent = newContent; },
+                    "displayOrig": () => { element.innerHTML = origContent; },
+                    "displayTranslated": () => { element.innerHTML = translatedContent; }
+                };
+
+                uidToVisitorMap[uid] = visitor;
+
+                return visitor;
+            }
+        };// end getElementVisitor
+
+        const getElementVisitorByUID = (uid) =>
+        {
+            return uidToVisitorMap[uid];
+        };// end getElementVisitorByUID
+
+        return
+        {
+            getElementUID,
+            getElementByUID,
+            getElementVisitor,
+            getElementVisitorByUID
+        };
     })();
 
     // format: { NODE_ID: { translatedText: <str>, origText: <str> }}
