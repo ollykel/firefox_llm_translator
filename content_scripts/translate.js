@@ -220,7 +220,7 @@
         };
     };// end makeElemVisitor
 
-    const getTargetElemBatches = (() => {
+    const getTargetElemContentBatches = (() => {
         const TARGET_ELEMS_SET = {
             'p': true,
             'span': true,
@@ -256,7 +256,7 @@
             }
         };// end collectTargetElems
 
-        const makeElemBatches = (elements, batchCharCount) =>
+        const makeElemContentBatches = (elements, batchCharCount) =>
         {
             let currBatch = {};
             let currCharCount = 0;
@@ -282,23 +282,23 @@
             }// end for (const elem of elements)
 
             return batches;
-        };// end makeElemBatches
+        };// end makeElemContentBatches
 
-        const getTargetElemBatches = ({ element, batchCharCount }) =>
+        const getTargetElemContentBatches = ({ element, batchCharCount }) =>
         {
             const elemCollection = collectTargetElems(element);
 
-            return makeElemBatches(elemCollection, batchCharCount);
-        };// end getTargetElemBatches
+            return makeElemContentBatches(elemCollection, batchCharCount);
+        };// end getTargetElemContentBatches
 
-        return getTargetElemBatches;
+        return getTargetElemContentBatches;
     })();
 
     const applyTranslationTable = (translationTable) =>
     {
         for (const [elemUID, translatedContent] of Object.entries(translationTable))
         {
-            const elemVisitor = getElementByUID(elemUID);// TODO: implement elemVisitor
+            const elemVisitor = getElementVisitorByUID(elemUID);
 
             if (elemVisitor !== null)
             {
@@ -308,10 +308,10 @@
         }// end for (const [elemUID, translatedContent] of Object.entries(translationTable))
     };// end applyTranslationTable
 
-    const translateElemBatches = (() => {
-        const formatPrompt = ({ elemBatch, targetLanguage }) =>
+    const translateElemContentBatches = (() => {
+        const formatPrompt = ({ elemContentBatch, targetLanguage }) =>
         {
-            const batchStr = JSON.stringify(elemBatch);
+            const batchStr = JSON.stringify(elemContentBatch);
 
             return (
 `Please translate the values in the json object provided below from whatever the
@@ -347,20 +347,20 @@ ${batchStr}
             }
         };// end handleAPIResponse
 
-        const translateElemBatches = ({ elemBatches, apiConfig, targetLanguage }) =>
+        const translateElemContentBatches = ({ elemContentBatches, apiConfig, targetLanguage }) =>
         {
             // concurrently query for translation tables, then translate
             // elements on dom tree
-            for (const elemBatch of elemBatches)
+            for (const elemContentBatch of elemContentBatches)
             {
-                const promptStr = formatPrompt({ elemBatch, targetLanguage });
+                const promptStr = formatPrompt({ elemContentBatch, targetLanguage });
 
                 queryAPIOpenAI({ promptStr, apiConfig })
                     .then(handleAPIResponse);
-            }// end for (const elemBatch of elemBatches)
-        };// end translateElemBatches
+            }// end for (const elemContentBatch of elemContentBatches)
+        };// end translateElemContentBatches
 
-        return translateElemBatches;
+        return translateElemContentBatches;
     })();
 
     // Partitions one single textTable (mapping of text node ids to text
