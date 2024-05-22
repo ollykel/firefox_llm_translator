@@ -82,24 +82,32 @@
         browser.runtime.sendMessage({ command: "notifyRequestProcessingFinished" });
     };// end notifyRequestProcessingFinished
 
-    let __GET_ELEMENT_UID_COUNT = 0;
-    const getElementUID = (element) =>
-    {
+    const getElementUID = (() => {
         const   ELEMENT_UID_ATTR_NAME   = 'llm_autotranslate_uid';
 
-        if (element.hasAttribute(ELEMENT_UID_ATTR_NAME))
-        {
-            return element.getAttribute(ELEMENT_UID_ATTR_NAME);
-        }
-        else
-        {
-            const out = `element${__GET_ELEMENT_UID_COUNT}`;
+        let elementUIDCount = 0;
+        let elemUIDMap = {};
 
-            element.setAttribute(ELEMENT_UID_ATTR_NAME, out);
-            ++__GET_ELEMENT_UID_COUNT;
-            return out;
-        }
-    };// end getElementUID
+        const getElementUID = (element) =>
+        {
+            if (element.hasAttribute(ELEMENT_UID_ATTR_NAME))
+            {
+                return element.getAttribute(ELEMENT_UID_ATTR_NAME);
+            }
+            else
+            {
+                const uid = `element${elementUIDCount}`;
+
+                elemUIDMap[uid] = element;
+                element.setAttribute(ELEMENT_UID_ATTR_NAME, uid);
+                ++elementUIDCount;
+
+                return uid;
+            }
+        };// end getElementUID
+
+        return getElementUID;
+    })();
 
     // format: { NODE_ID: { translatedText: <str>, origText: <str> }}
     let TEXT_NODE_WRAPPERS = {};
