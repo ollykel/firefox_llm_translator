@@ -129,11 +129,25 @@
             {
                 const tagName = element.tagName().toLowerCase();
                 const origContent = element.innerHTML;
+
                 let translatedContent = element.innerHTML;
+
+                const getChildren = () =>
+                {
+                    let out = [];
+
+                    for (const child of element.chlidren)
+                    {
+                        out.push(getElementVisitor(child));
+                    }// end for (const child of element.chlidren)
+
+                    return out;
+                };// end getChildren
 
                 const visitor = {
                     "getUID": () => uid,
                     "getTagName": () => tagName,
+                    getChildren,
                     "getOrigContent": () => origContent,
                     "getTranslatedContent": () => translatedText,
                     "setTranslatedContent": (newContent) => { translatedContent = newContent; },
@@ -237,37 +251,37 @@
             'label': true
         };// end TARGET_ELEMS_SET
 
-        const collectTargetElems = (element) =>
+        const collectTargetElemVisitors = (elementVisitor) =>
         {
-            const elemTag = element.tagName.toLowerCase();
+            const elemTag = elementVisitor.getTagName();
 
             if (elemTag in TARGET_ELEMS_SET)
             {
-                return [element];
+                return [elementVisitor];
             }
             else
             {
                 let out = [];
 
-                for (const elem of element.children)
+                for (const visitor of elemVisitor.getChildren())
                 {
-                    out.push(...collectTargetElems(elem));
+                    out.push(...collectTargetElemVisitors(visitor));
                 }// end for (const elem of element.children)
 
                 return out;
             }
-        };// end collectTargetElems
+        };// end collectTargetElemVisitors
 
-        const makeElemContentBatches = (elements, batchCharCount) =>
+        const makeElemContentBatches = (elementVisitors, batchCharCount) =>
         {
             let currBatch = {};
             let currCharCount = 0;
             let batches = [];
 
-            for (const elem of elements)
+            for (const elemVisitor of elementVisitors)
             {
-                const elemUID = getElementUID(elem);
-                const elemContent = elem.innerHTML;
+                const elemUID = elemVisitor.getUID();
+                const elemContent = elemVisitor.getOrigContent();
                 const nextCharCount = currCharCount + elemContent.length;
 
                 if (nextCharCount > batchCharCount)
@@ -283,14 +297,20 @@
                 }
             }// end for (const elem of elements)
 
+            if (currCharCount > 0)
+            {
+                batches.push(currBatch);
+            }
+
             return batches;
         };// end makeElemContentBatches
 
         const getTargetElemContentBatches = ({ element, batchCharCount }) =>
         {
-            const elemCollection = collectTargetElems(element);
+            const parentVisitor = getElementVisitor(element);
+            const elemVisitorCollection = collectTargetElemVisitors(parentVisitor);
 
-            return makeElemContentBatches(elemCollection, batchCharCount);
+            return makeElemContentBatches(elemVisitorCollection, batchCharCount);
         };// end getTargetElemContentBatches
 
         return getTargetElemContentBatches;
