@@ -241,13 +241,16 @@
     // consider children of all following elements for translation
     const ELEMS_TO_TRANSLATE_SET = {
         'p': true,
+        'span': true,
         'a': true,
         'li': true,
         'table': true,
         'h1': true,
         'h2': true,
         'h3': true,
-        'h4': true
+        'h4': true,
+        'button': true,
+        'label': true
     };// end ELEMS_TO_TRANSLATE_SET
 
     const generateTranslationTable = async ({ element, targetLanguage, characterLimit, apiConfig }) =>
