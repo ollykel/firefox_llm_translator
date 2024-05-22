@@ -13,6 +13,9 @@
 
     window.hasRun = true;
 
+    // GLOBAL CONSTANTS
+    const   MAX_BATCH_CHAR_COUNT        = 2000;
+
     // Functions:
     //  - translateElement(element, targetLanguage)
     //      - generate a translationTable into the targetLanguage
@@ -166,6 +169,61 @@
             "getElemNodes": () => childNodes
         };
     };// end makeElemVisitor
+
+    // Partitions one single textTable (mapping of text node ids to text
+    // content) into several textTables, each of which contains no more than
+    // <batchCharCount> characters of text content.
+    //
+    // @input textTable (obj)       -- a mapping of text node ids to text content
+    // @input batchCharCount (int)  -- maximum total characters of text content
+    //                                  per output textTable
+    // @input keepSingles (bool)    -- whether or not to drop single text nodes
+    //                                 which exceed the batchCharCount on their
+    //                                 own. If true, any such nodes will be put
+    //                                 in their own textTable
+    // @return -- an array of textTables
+    const partitionTextTableByCharCount = ({ textTable, batchCharCount, keepSingles = false }) =>
+    {
+        let out = [];
+        let currTable = {};
+        let currCharCount = 0;
+
+        for (const [key, val] of Object.values(textTable))
+        {
+            if (currCharCount + val.length > batchCharCount)
+            {
+                if (currCharCount === 0)
+                {
+                    if (keepSingles)
+                    {
+                        currTable[key] = val;
+                        out.push(currTable);
+                        currTable = {};
+                    }
+                    // else: just ignore
+                }
+                else
+                {
+                    out.push(currTable);
+                    currTable = {};
+                    currTable[key] = val;
+                    currCharCount = val.length;
+                }
+            }
+            else
+            {
+                currTable[key] = val;
+                currCharCount += val.length;
+            }
+        }// end for (const [key, val] of Object.values(textTable))
+
+        if (currCharCount > 0)
+        {
+            out.push(currTable);
+        }
+
+        return out;
+    };// end partitionTextTableByCharCount
 
     // consider children of all following elements for translation
     const ELEMS_TO_TRANSLATE_SET = {
