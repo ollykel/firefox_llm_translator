@@ -127,12 +127,13 @@
             }
             else
             {
+                const tagName = element.tagName().toLowerCase();
                 const origContent = element.innerHTML;
                 let translatedContent = element.innerHTML;
 
                 const visitor = {
                     "getUID": () => uid,
-                    "getTagName": () => element.tagName,
+                    "getTagName": () => tagName,
                     "getOrigContent": () => origContent,
                     "getTranslatedContent": () => translatedText,
                     "setTranslatedContent": (newContent) => { translatedContent = newContent; },
