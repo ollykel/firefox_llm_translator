@@ -78,6 +78,19 @@
         return currObj;
     };// end extractObj
 
+    const mergeObj = (orig, ...toMerge) =>
+    {
+        for (const obj of toMerge)
+        {
+            for (const [k, v] of Object.entries(obj))
+            {
+                orig[k] = v;
+            }// end for (const [k, v] of Object.values(obj))
+        }// end for (const obj of toMerge)
+
+        return orig;
+    };// end mergeObj
+
     const isOnlyWhitespace = (str) => str.trim().length === 0;
 
     const notifyRequestProcessing = () =>
@@ -188,7 +201,7 @@
         let currTable = {};
         let currCharCount = 0;
 
-        for (const [key, val] of Object.values(textTable))
+        for (const [key, val] of Object.entries(textTable))
         {
             if (currCharCount + val.length > batchCharCount)
             {
@@ -291,7 +304,7 @@
         };// end visitElem
 
         const textTable = visitElem(element, false);// don't translate until appropriate parent element visited
-        const promptStr =
+        const formatPrompt = ({ textTable, targetLanguage }) => 
 `Please translate the json object provided below from whatever the original
 language is into the following language: ${targetLanguage}.
 
@@ -312,7 +325,7 @@ whenever possible.
 ${JSON.stringify(textTable)}
 """`;// TODO: implement non-stub
         const translationTable = await queryLLM({
-            apiConfig, promptStr
+            textTable, targetLanguage, apiConfig, formatPrompt
         });
 
         return translationTable;
@@ -426,22 +439,65 @@ ${JSON.stringify(textTable)}
         };
     };// end queryAPIOpenAI
     
-    const queryLLM = async ({ apiConfig, promptStr }) =>
+    // Handles querying the LLM of choice (currently only OpenAI) for the
+    // translations of text nodes. May break request into multiple sub-requests
+    // to account for character limit.
+    //
+    // Performs any necessary error handling with side effects (i.e. notifying
+    // user) if the api request is unsuccessful.
+    //
+    // @input textTable (obj)
+    //      -- all text nodes to translate, with their unique IDs
+    // @input targetLanguage (str)
+    //      -- language to request translation into
+    // @input apiConfig (obj)
+    //      -- configuration settings for api request
+    // @input formatPrompt (func({ textTable, targetLanguage }) -> str)
+    //      -- function which generates a prompt to send to LLM's api
+    // 
+    // @return (Promise of) translation table, if successful; empty object
+    // otherwise
+    const queryLLM = async ({ textTable, targetLanguage, apiConfig, formatPrompt }) =>
     {
-        notifyRequestProcessing();
-        const response = await queryAPIOpenAI({ promptStr, apiConfig });
-        notifyRequestProcessingFinished();
-        // const response = queryAPIStub({ promptStr, apiConfig });// stub for
-        // testing
+        let translationTable = {};
 
-        if (response.hasError())
+        notifyRequestProcessing();
+
+        try
         {
-            logError(response.getError());
-            return {};
+            // break up textTable into several sub-tables, make separate request
+            // for each one
+            const subTextTables = partitionTextTableByCharCount({
+                textTable,
+                batchCharCount: MAX_BATCH_CHAR_COUNT,
+                keepSingles: true
+            });
+
+            // TODO: consider adding waits between creating new requests
+            const responsePromises = subTextTables.map((table) => {
+                const promptStr = formatPrompt({ textTable: table, targetLanguage });
+
+                return queryAPIOpenAI({ promptStr, apiConfig });
+            });
+
+            for (const responsePromise of responsePromises)
+            {
+                const response = await responsePromise;
+
+                if (response.hasError())
+                {
+                    logError(response.getError());
+                }
+                else
+                {
+                    translationTable = mergeObj(translationTable, response.getBody());
+                }
+            }// end for (const responsePromise of responsePromises)
         }
-        else
+        finally
         {
-            return response.getBody();
+            notifyRequestProcessingFinished();
+            return translationTable;
         }
     };// end queryLLM
 

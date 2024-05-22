@@ -117,8 +117,6 @@ const notifyRequestProcessing = () =>
 {
     const notifElem = document.getElementById('notif-request-processing');
 
-    console.log(`notifElem: ${notifElem}`);// TODO: remove debug
-    console.log(`notifElem style: ${notifElem.style.cssText}`);// TODO: remove debug
     notifElem.style.setProperty('display', 'inline-block');
 };// end notifyRequestProcessing
 
