@@ -132,6 +132,7 @@
 
                 const visitor = {
                     "getUID": () => uid,
+                    "getTagName": () => element.tagName,
                     "getOrigContent": () => origContent,
                     "getTranslatedContent": () => translatedText,
                     "setTranslatedContent": (newContent) => { translatedContent = newContent; },
