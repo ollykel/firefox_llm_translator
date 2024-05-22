@@ -254,7 +254,7 @@ whenever possible.
 ${JSON.stringify(textTable)}
 """`;// TODO: implement non-stub
         const translationTable = await queryLLM({
-            textTable, targetLanguage, apiConfig, promptStr
+            apiConfig, promptStr
         });
 
         return translationTable;
@@ -368,7 +368,7 @@ ${JSON.stringify(textTable)}
         };
     };// end queryAPIOpenAI
     
-    const queryLLM = async ({ textTable, targetLanguage, apiConfig, promptStr }) =>
+    const queryLLM = async ({ apiConfig, promptStr }) =>
     {
         notifyRequestProcessing();
         const response = await queryAPIOpenAI({ promptStr, apiConfig });
