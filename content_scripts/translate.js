@@ -82,7 +82,7 @@
         browser.runtime.sendMessage({ command: "notifyRequestProcessingFinished" });
     };// end notifyRequestProcessingFinished
 
-    const getElementUID = (() => {
+    const [getElementUID, getElementByUID] = (() => {
         const   ELEMENT_UID_ATTR_NAME   = 'llm_autotranslate_uid';
 
         let elementUIDCount = 0;
@@ -106,7 +106,12 @@
             }
         };// end getElementUID
 
-        return getElementUID;
+        const getElementByUID = (uid) =>
+        {
+            return elemUIDMap[uid];
+        };// end getElementByUID
+
+        return [getElementUID, getElementByUID];
     })();
 
     // format: { NODE_ID: { translatedText: <str>, origText: <str> }}
