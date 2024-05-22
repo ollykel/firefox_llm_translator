@@ -234,7 +234,8 @@
 
         const textTable = visitElem(element, false);// don't translate until appropriate parent element visited
         const promptStr =
-`Please translate the json object provided below into the following language: ${targetLanguage}.
+`Please translate the json object provided below from whatever the original
+language is into the following language: ${targetLanguage}.
 
 Return the response as a json object which maps each key in the original json
 object to the corresponding translation, with the context of neighboring values
