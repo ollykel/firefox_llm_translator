@@ -182,67 +182,6 @@
         };
     })();
 
-    // format: { NODE_ID: { translatedText: <str>, origText: <str> }}
-    let TEXT_NODE_WRAPPERS = {};
-
-    const makeElemVisitor = (element) =>
-    {
-        const   TEXT_NODE_TYPE  = 3;
-
-        const getTextNodeWrapper = (elem, index, textNode) =>
-        {
-            const elemId = getElementUID(elem);
-            const uid = `text:${elemId}:${index}`;
-
-            if (uid in TEXT_NODE_WRAPPERS)
-            {
-                return TEXT_NODE_WRAPPERS[uid];
-            }
-            else
-            {
-                // init origText and translatedText both to original text content
-                const origText = ("" + textNode.textContent);
-                let translatedText = ("" + textNode.textContent);
-
-                const newWrapper = {
-                    "getUniqueID": () => uid,
-                    "getOrigText": () => origText,
-                    "getTranslatedText": () => translatedText,
-                    "setTranslatedText": (newText) => { translatedText = newText; },
-                    "displayTranslated": () => { textNode.textContent = translatedText; },
-                    "displayOrig": () => { textNode.textContent = origText; }
-                };
-
-                TEXT_NODE_WRAPPERS[uid] = newWrapper;
-                return newWrapper;
-            }
-        };// end getTextNodeWrapper
-
-        let childNodes = [];
-        let textNodes = [];
-
-        for (let i = 0; i < element.children.length; ++i)
-        {
-            const currChild = element.children[i];
-
-            childNodes.push(currChild);
-        }// end for (let i = 0; i < element.children.length; ++i)
-
-        for (let i = 0; i < element.childNodes.length; ++i)
-        {
-            const currNode = element.childNodes[i];
-            if (currNode.nodeType === TEXT_NODE_TYPE)
-            {
-                textNodes.push(getTextNodeWrapper(element, i, currNode));
-            }
-        }// end for (let i = 0; i < element.childNodes.length; ++i)
-
-        return {
-            "getTextNodes": () => textNodes,
-            "getElemNodes": () => childNodes
-        };
-    };// end makeElemVisitor
-
     const getTargetElemContentBatches = (() => {
         const TARGET_ELEMS_SET = {
             'p': true,
@@ -329,231 +268,6 @@
 
         return getTargetElemContentBatches;
     })();
-
-    const applyTranslationTable = (translationTable) =>
-    {
-        for (const [elemUID, translatedContent] of Object.entries(translationTable))
-        {
-            const elemVisitor = getElementVisitorByUID(elemUID);
-
-            if (elemVisitor !== null)
-            {
-                elemVisitor.setTranslatedContent(translatedContent);
-                elemVisitor.displayTranslated();
-            }
-        }// end for (const [elemUID, translatedContent] of Object.entries(translationTable))
-    };// end applyTranslationTable
-
-    const translateElemContentBatches = (() => {
-        const formatPrompt = ({ elemContentBatch, targetLanguage }) =>
-        {
-            const batchStr = JSON.stringify(elemContentBatch);
-
-            return (
-`Please translate the values in the json object provided below from whatever the
-original language is into the following language: ${targetLanguage}.
-
-Each of the values is the content of an html element, which may or not contain
-nested html elements.  Return the response as a json object which maps each key
-in the original json object to the corresponding translation, with the context
-of neighboring values taken into account. Please do not modify the attributes of
-html tags.
-
-Requirements:
-    - Any html anchors encountered need to be replicated in the translation,
-    with the new hyperlink enclosing a stretch of text equivalent to the text
-    enclosed by the original hyperlink.
-    - Any whitespace and other non-lexical characters a the beginning and ending
-    of every content string must be preserved in the translated content string.
-
-"""
-${batchStr}
-"""`);// TODO: implement non-stub
-        };// end formatPrompt
-
-        const handleAPIResponse = (resp) =>
-        {
-            if (resp.hasError())
-            {
-                logError(resp.getError());
-            }
-            else
-            {
-                applyTranslationTable(resp.getBody());
-            }
-        };// end handleAPIResponse
-
-        const translateElemContentBatches = async ({ elemContentBatches, apiConfig, targetLanguage }) =>
-        {
-            // concurrently query for translation tables, then translate
-            // elements on dom tree
-
-            const queryPromises = elemContentBatches.map((elemContentBatch) =>
-            {
-                const promptStr = formatPrompt({ elemContentBatch, targetLanguage });
-
-                return queryAPIOpenAI({ promptStr, apiConfig }).then(handleAPIResponse);
-            });
-
-            for (const queryPromise of queryPromises)
-            {
-                await queryPromise;
-            }// end for (const elemContentBatch of elemContentBatches)
-        };// end translateElemContentBatches
-
-        return translateElemContentBatches;
-    })();
-
-    // Partitions one single textTable (mapping of text node ids to text
-    // content) into several textTables, each of which contains no more than
-    // <batchCharCount> characters of text content.
-    //
-    // @input textTable (obj)       -- a mapping of text node ids to text content
-    // @input batchCharCount (int)  -- maximum total characters of text content
-    //                                  per output textTable
-    // @input keepSingles (bool)    -- whether or not to drop single text nodes
-    //                                 which exceed the batchCharCount on their
-    //                                 own. If true, any such nodes will be put
-    //                                 in their own textTable
-    // @return -- an array of textTables
-    const partitionTextTableByCharCount = ({ textTable, batchCharCount, keepSingles = false }) =>
-    {
-        let out = [];
-        let currTable = {};
-        let currCharCount = 0;
-
-        for (const [key, val] of Object.entries(textTable))
-        {
-            if (currCharCount + val.length > batchCharCount)
-            {
-                if (currCharCount === 0)
-                {
-                    if (keepSingles)
-                    {
-                        currTable[key] = val;
-                        out.push(currTable);
-                        currTable = {};
-                    }
-                    // else: just ignore
-                }
-                else
-                {
-                    out.push(currTable);
-                    currTable = {};
-                    currTable[key] = val;
-                    currCharCount = val.length;
-                }
-            }
-            else
-            {
-                currTable[key] = val;
-                currCharCount += val.length;
-            }
-        }// end for (const [key, val] of Object.values(textTable))
-
-        if (currCharCount > 0)
-        {
-            out.push(currTable);
-        }
-
-        return out;
-    };// end partitionTextTableByCharCount
-
-    // consider children of all following elements for translation
-    const ELEMS_TO_TRANSLATE_SET = {
-        'p': true,
-        'span': true,
-        'a': true,
-        'li': true,
-        'table': true,
-        'h1': true,
-        'h2': true,
-        'h3': true,
-        'h4': true,
-        'button': true,
-        'label': true
-    };// end ELEMS_TO_TRANSLATE_SET
-
-    const generateTranslationTable = async ({ element, targetLanguage, characterLimit, apiConfig }) =>
-    {
-        const visitElem = (elem, shouldTranslate) =>
-        {
-            if (characterLimit < 1)
-            {
-                return {};
-            }
-
-            const elemVisitor = makeElemVisitor(elem);
-
-            let textTable = {};
-
-            if (shouldTranslate)
-            {
-                for (let textNode of elemVisitor.getTextNodes())
-                {
-                    const id = textNode.getUniqueID();
-                    const origText = textNode.getOrigText();
-
-                    if (!isOnlyWhitespace(origText))
-                    {
-                        characterLimit -= origText.length;
-
-                        if (characterLimit > 0)
-                        {
-                            textTable[id] = origText;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }// end for (let textNode of elemVisitor.getTextNodes())
-            }
-
-            for (let childNode of elemVisitor.getElemNodes())
-            {
-                if (characterLimit < 1)
-                {
-                    break;
-                }
-
-                const translateNext = shouldTranslate
-                    || (childNode.nodeName.toLowerCase() in ELEMS_TO_TRANSLATE_SET);
-                const subTable = visitElem(childNode, translateNext);
-
-                textTable = { ...textTable, ...subTable };
-            }// end for (let childNode of elemVisitor.getElemNodes())
-
-            return textTable;
-        };// end visitElem
-
-        const textTable = visitElem(element, false);// don't translate until appropriate parent element visited
-        const formatPrompt = ({ textTable, targetLanguage }) => 
-`Please translate the json object provided below from whatever the original
-language is into the following language: ${targetLanguage}.
-
-Return the response as a json object which maps each key in the original json
-object to the corresponding translation, with the context of neighboring values
-taken into account.
-
-Keep in mind that all of this text belongs to a single webpage. Try to translate
-the text in a way that respects the original meaning and sentence-wise grammar
-of the target language while still providing an adequate translation of each
-individual unit of text, as many of these text nodes will be the anchor text of
-hyperlinks.
-
-Preserve the whitespace and extraneous characters of the original strings
-whenever possible.
-
-"""
-${JSON.stringify(textTable)}
-"""`;// TODO: implement non-stub
-        const translationTable = await queryLLM({
-            textTable, targetLanguage, apiConfig, formatPrompt
-        });
-
-        return translationTable;
-    };// end generateTranslationTable
 
     const queryAPIStub = ({ promptStr, apiConfig }) =>
     {
@@ -662,69 +376,81 @@ ${JSON.stringify(textTable)}
             "getBody": () => ({ ...body })
         };
     };// end queryAPIOpenAI
-    
-    // Handles querying the LLM of choice (currently only OpenAI) for the
-    // translations of text nodes. May break request into multiple sub-requests
-    // to account for character limit.
-    //
-    // Performs any necessary error handling with side effects (i.e. notifying
-    // user) if the api request is unsuccessful.
-    //
-    // @input textTable (obj)
-    //      -- all text nodes to translate, with their unique IDs
-    // @input targetLanguage (str)
-    //      -- language to request translation into
-    // @input apiConfig (obj)
-    //      -- configuration settings for api request
-    // @input formatPrompt (func({ textTable, targetLanguage }) -> str)
-    //      -- function which generates a prompt to send to LLM's api
-    // 
-    // @return (Promise of) translation table, if successful; empty object
-    // otherwise
-    const queryLLM = async ({ textTable, targetLanguage, apiConfig, formatPrompt }) =>
+
+    const applyTranslationTable = (translationTable) =>
     {
-        let translationTable = {};
-
-        notifyRequestProcessing();
-
-        try
+        for (const [elemUID, translatedContent] of Object.entries(translationTable))
         {
-            // break up textTable into several sub-tables, make separate request
-            // for each one
-            const subTextTables = partitionTextTableByCharCount({
-                textTable,
-                batchCharCount: MAX_BATCH_CHAR_COUNT,
-                keepSingles: true
-            });
+            const elemVisitor = getElementVisitorByUID(elemUID);
 
-            // TODO: consider adding waits between creating new requests
-            const responsePromises = subTextTables.map((table) => {
-                const promptStr = formatPrompt({ textTable: table, targetLanguage });
-
-                return queryAPIOpenAI({ promptStr, apiConfig });
-            });
-
-            for (const responsePromise of responsePromises)
+            if (elemVisitor !== null)
             {
-                const response = await responsePromise;
+                elemVisitor.setTranslatedContent(translatedContent);
+                elemVisitor.displayTranslated();
+            }
+        }// end for (const [elemUID, translatedContent] of Object.entries(translationTable))
+    };// end applyTranslationTable
 
-                if (response.hasError())
-                {
-                    logError(response.getError());
-                }
-                else
-                {
-                    translationTable = mergeObj(translationTable, response.getBody());
-                }
-            }// end for (const responsePromise of responsePromises)
-        }
-        finally
+    const translateElemContentBatches = (() => {
+        const formatPrompt = ({ elemContentBatch, targetLanguage }) =>
         {
-            notifyRequestProcessingFinished();
-            return translationTable;
-        }
-    };// end queryLLM
+            const batchStr = JSON.stringify(elemContentBatch);
 
+            return (
+`Please translate the values in the json object provided below from whatever the
+original language is into the following language: ${targetLanguage}.
+
+Each of the values is the content of an html element, which may or not contain
+nested html elements.  Return the response as a json object which maps each key
+in the original json object to the corresponding translation, with the context
+of neighboring values taken into account. Please do not modify the attributes of
+html tags.
+
+Requirements:
+    - Any html anchors encountered need to be replicated in the translation,
+    with the new hyperlink enclosing a stretch of text equivalent to the text
+    enclosed by the original hyperlink.
+    - Any whitespace and other non-lexical characters a the beginning and ending
+    of every content string must be preserved in the translated content string.
+
+"""
+${batchStr}
+"""`);// TODO: implement non-stub
+        };// end formatPrompt
+
+        const handleAPIResponse = (resp) =>
+        {
+            if (resp.hasError())
+            {
+                logError(resp.getError());
+            }
+            else
+            {
+                applyTranslationTable(resp.getBody());
+            }
+        };// end handleAPIResponse
+
+        const translateElemContentBatches = async ({ elemContentBatches, apiConfig, targetLanguage }) =>
+        {
+            // concurrently query for translation tables, then translate
+            // elements on dom tree
+
+            const queryPromises = elemContentBatches.map((elemContentBatch) =>
+            {
+                const promptStr = formatPrompt({ elemContentBatch, targetLanguage });
+
+                return queryAPIOpenAI({ promptStr, apiConfig }).then(handleAPIResponse);
+            });
+
+            for (const queryPromise of queryPromises)
+            {
+                await queryPromise;
+            }// end for (const elemContentBatch of elemContentBatches)
+        };// end translateElemContentBatches
+
+        return translateElemContentBatches;
+    })();
+    
     const translateElement = async ({ element, targetLanguage, characterLimit, apiConfig }) =>
     {
         const elemContentBatches = getTargetElemContentBatches({
