@@ -279,7 +279,7 @@
             }
         };// end collectTargetElemVisitors
 
-        const makeElemContentBatches = (elementVisitors, batchCharCount) =>
+        const makeElemContentBatches = (elementVisitors, batchCharCount, maxCharCount) =>
         {
             let currBatch = {};
             let currCharCount = 0;
@@ -290,6 +290,13 @@
                 const elemUID = elemVisitor.getUID();
                 const elemContent = elemVisitor.getOrigContent();
                 const nextCharCount = currCharCount + elemContent.length;
+
+                maxCharCount -= elemContent.length;
+
+                if (maxCharCount < 0)
+                {
+                    break;
+                }
 
                 if (nextCharCount > batchCharCount)
                 {
@@ -312,12 +319,12 @@
             return batches;
         };// end makeElemContentBatches
 
-        const getTargetElemContentBatches = ({ element, batchCharCount }) =>
+        const getTargetElemContentBatches = ({ element, batchCharCount, maxCharCount }) =>
         {
             const parentVisitor = getElementVisitor(element);
             const elemVisitorCollection = collectTargetElemVisitors(parentVisitor);
 
-            return makeElemContentBatches(elemVisitorCollection, batchCharCount);
+            return makeElemContentBatches(elemVisitorCollection, batchCharCount, maxCharCount);
         };// end getTargetElemContentBatches
 
         return getTargetElemContentBatches;
