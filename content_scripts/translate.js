@@ -727,34 +727,19 @@ ${JSON.stringify(textTable)}
 
     const translateElement = async ({ element, targetLanguage, characterLimit, apiConfig }) =>
     {
-        const translationTable = await generateTranslationTable({
-          element, targetLanguage, characterLimit, apiConfig
+        const elemContentBatches = getTargetElemContentBatches({
+            element,
+            batchCharCount: MAX_BATCH_CHAR_COUNT,
+            maxCharCount: characterLimit
         });
 
-        const visitElem = (elem) =>
-        {
-            const elemVisitor = makeElemVisitor(elem);
-
-            for (const textNode of elemVisitor.getTextNodes())
-            {
-                const id = textNode.getUniqueID();
-
-                if (id in translationTable)
-                {
-                  const newText = translationTable[id];
-
-                  textNode.setTranslatedText(newText);
-                  textNode.displayTranslated();
-                }
-            }// end for (const textNode of elemVisitor.getTextNodes())
-
-            for (const elem of elemVisitor.getElemNodes())
-            {
-                visitElem(elem);
-            }// end for (const elem of elemVisitor.getElemNodes())
-        };// end visitElem
-
-        visitElem(element);
+        notifyRequestProcessing();
+        await translateElemContentBatches({
+            elemContent,
+            apiConfig,
+            targetLanguage
+        });
+        notifyRequestProcessingFinished();
     };// end translateElement
     
     const translatePage = ({ targetLanguage, characterLimit, apiConfig }) =>
