@@ -128,7 +128,7 @@
             }
             else
             {
-                const tagName = element.tagName().toLowerCase();
+                const tagName = element.tagName.toLowerCase();
                 const origContent = element.innerHTML;
 
                 let translatedContent = element.innerHTML;
@@ -137,7 +137,7 @@
                 {
                     let out = [];
 
-                    for (const child of element.chlidren)
+                    for (const child of element.children)
                     {
                         out.push(getElementVisitor(child));
                     }// end for (const child of element.chlidren)
@@ -172,8 +172,7 @@
             return Object.values(uidToVisitorMap);
         };// end getVisitedElementVisitors
 
-        return
-        {
+        return {
             getElementUID,
             getElementByUID,
             getElementVisitor,
@@ -209,7 +208,7 @@
             {
                 let out = [];
 
-                for (const visitor of elemVisitor.getChildren())
+                for (const visitor of elementVisitor.getChildren())
                 {
                     out.push(...collectTargetElemVisitors(visitor));
                 }// end for (const elem of element.children)
