@@ -83,8 +83,6 @@
     };// end notifyRequestProcessingFinished
 
     const {
-        getElementUID,
-        getElementByUID,
         getElementVisitor,
         getElementVisitorByUID,
         getVisitedElementVisitors
@@ -92,7 +90,6 @@
         const   ELEMENT_UID_ATTR_NAME   = 'llm_autotranslate_uid';
 
         let elementUIDCount = 0;
-        let elemUIDMap = {};
         let uidToVisitorMap = {};
 
         const getElementUID = (element) =>
@@ -105,18 +102,12 @@
             {
                 const uid = `element${elementUIDCount}`;
 
-                elemUIDMap[uid] = element;
                 element.setAttribute(ELEMENT_UID_ATTR_NAME, uid);
                 ++elementUIDCount;
 
                 return uid;
             }
         };// end getElementUID
-
-        const getElementByUID = (uid) =>
-        {
-            return elemUIDMap[uid];
-        };// end getElementByUID
 
         const getElementVisitor = (element) =>
         {
@@ -173,8 +164,6 @@
         };// end getVisitedElementVisitors
 
         return {
-            getElementUID,
-            getElementByUID,
             getElementVisitor,
             getElementVisitorByUID,
             getVisitedElementVisitors
@@ -245,7 +234,8 @@
                 }
                 else
                 {
-                    batch[elemUID] = elemContent;
+                    currBatch[elemUID] = elemContent;
+                    currCharCount = nextCharCount;
                 }
             }// end for (const elem of elements)
 
@@ -460,7 +450,7 @@ ${batchStr}
 
         notifyRequestProcessing();
         await translateElemContentBatches({
-            elemContent,
+            elemContentBatches,
             apiConfig,
             targetLanguage
         });
