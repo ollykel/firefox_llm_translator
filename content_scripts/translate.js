@@ -86,7 +86,8 @@
         getElementUID,
         getElementByUID,
         getElementVisitor,
-        getElementVisitorByUID
+        getElementVisitorByUID,
+        getVisitedElementVisitors
     } = (() => {
         const   ELEMENT_UID_ATTR_NAME   = 'llm_autotranslate_uid';
 
@@ -166,12 +167,18 @@
             return uidToVisitorMap[uid];
         };// end getElementVisitorByUID
 
+        const getVisitedElementVisitors = () =>
+        {
+            return Object.values(uidToVisitorMap);
+        };// end getVisitedElementVisitors
+
         return
         {
             getElementUID,
             getElementByUID,
             getElementVisitor,
-            getElementVisitorByUID
+            getElementVisitorByUID,
+            getVisitedElementVisitors
         };
     })();
 
