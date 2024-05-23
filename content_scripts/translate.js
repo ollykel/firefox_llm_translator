@@ -399,6 +399,8 @@ Requirements:
     - Any html anchors encountered need to be replicated in the translation,
     with the new hyperlink enclosing a stretch of text equivalent to the text
     enclosed by the original hyperlink.
+    - Any href and src attributes encountered in html tags need to be reproduced
+    as-is; they should NOT be translated.
     - Any whitespace and other non-lexical characters a the beginning and ending
     of every content string must be preserved in the translated content string.
 
