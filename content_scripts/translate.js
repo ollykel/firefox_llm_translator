@@ -762,49 +762,25 @@ ${JSON.stringify(textTable)}
 
     const displayOriginalPage = () =>
     {
-        const visitElem = (elem) =>
+        for (const elemVisitor of getVisitedElementVisitors())
         {
-            const visitor = makeElemVisitor(elem);
-
-            for (const textNode of visitor.getTextNodes())
-            {
-                textNode.displayOrig();
-            }// end for (const textNode of visitor.getTextNodes())
-
-            for (const child of visitor.getElemNodes())
-            {
-                visitElem(child);
-            }// end for (const child of visitor.getElemNodes())
-        };// end visitElem
-
-        visitElem(document.body);
+            elemVisitor.displayOrig();
+        }// end for (const elemVisitor of getVisitedElementVisitors())
     };// end displayOriginalPage
 
     const displayTranslatedPage = () =>
     {
-        const visitElem = (elem) =>
+        for (const elemVisitor of getVisitedElementVisitors())
         {
-            const visitor = makeElemVisitor(elem);
-
-            for (const textNode of visitor.getTextNodes())
-            {
-                textNode.displayTranslated();
-            }// end for (const textNode of visitor.getTextNodes())
-
-            for (const child of visitor.getElemNodes())
-            {
-                visitElem(child);
-            }// end for (const child of visitor.getElemNodes())
-        };// end visitElem
-
-        visitElem(document.body);
+            elemVisitor.displayTranslated();
+        }// end for (const elemVisitor of getVisitedElementVisitors())
     };// end displayTranslatedPage
 
     browser.runtime.onMessage.addListener((message) =>
     {
         if (message.command === 'translatePage')
         {
-          translatePage(message.parameters);
+            translatePage(message.parameters);
         }
         else if (message.command === 'displayOriginalPage')
         {
