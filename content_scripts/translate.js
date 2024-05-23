@@ -369,16 +369,21 @@ ${batchStr}
             }
         };// end handleAPIResponse
 
-        const translateElemContentBatches = ({ elemContentBatches, apiConfig, targetLanguage }) =>
+        const translateElemContentBatches = async ({ elemContentBatches, apiConfig, targetLanguage }) =>
         {
             // concurrently query for translation tables, then translate
             // elements on dom tree
-            for (const elemContentBatch of elemContentBatches)
+
+            const queryPromises = elemContentBatches.map((elemContentBatch) =>
             {
                 const promptStr = formatPrompt({ elemContentBatch, targetLanguage });
 
-                queryAPIOpenAI({ promptStr, apiConfig })
-                    .then(handleAPIResponse);
+                return queryAPIOpenAI({ promptStr, apiConfig }).then(handleAPIResponse);
+            });
+
+            for (const queryPromise of queryPromises)
+            {
+                await queryPromise;
             }// end for (const elemContentBatch of elemContentBatches)
         };// end translateElemContentBatches
 
