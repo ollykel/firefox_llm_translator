@@ -80,6 +80,7 @@
     const notifyRequestProcessingFinished = () =>
     {
         browser.runtime.sendMessage({ command: "notifyRequestProcessingFinished" });
+        alert('Translation finished.');
     };// end notifyRequestProcessingFinished
 
     const {
