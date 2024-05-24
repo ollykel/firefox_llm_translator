@@ -121,9 +121,9 @@
             else
             {
                 const tagName = element.tagName.toLowerCase();
-                const origContent = element.innerHTML;
+                const origContent = "" + element.innerHTML;
 
-                let translatedContent = element.innerHTML;
+                let translatedContent = "" + element.innerHTML;
 
                 const getChildren = () =>
                 {
