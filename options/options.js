@@ -33,7 +33,7 @@ const extractObj = (obj, ...fields) =>
 
 const getFormInputs = (form) =>
 {
-    let out = [];
+    const out = [];
 
     for (const elem of form.elements)
     {
