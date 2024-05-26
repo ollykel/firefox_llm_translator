@@ -31,6 +31,23 @@ const extractObj = (obj, ...fields) =>
     return currObj;
 };// end extractObj
 
+const getFormInputs = (form) =>
+{
+    let nameToInputMap = {};
+
+    for (const elem of form.elements)
+    {
+        if (elem.nodeName === 'INPUT')
+        {
+            const name = elem.name;
+
+            nameToInputMap[name] = elem;
+        }
+    }// end for (const elem of form.elements)
+    
+    return nameToInputMap;
+};// end getFormInputs
+
 const getFormValues = (form) =>
 {
     const inputs = form.elements;
