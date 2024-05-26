@@ -12,7 +12,8 @@
     "tabs",
     "activeTab",
     "scripting",
-    "webRequest"
+    "webRequest",
+    "storage"
   ],
 
   "action": {
@@ -25,5 +26,17 @@
       "matches": ["<all_urls>"],
       "js": ["content_scripts/translate.js"]
     }
-  ]
+  ],
+
+  "options_ui": {
+    "browser_style": false,
+    "page": "options/options.html"
+  },
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "llm_autotranslate@github.com",
+      "strict_min_version": "42.0"
+    }
+  }
 }
