@@ -50,23 +50,20 @@ const getFormInputs = (form) =>
 
 const getFormValues = (form) =>
 {
-    const inputs = form.elements;
-    let output = {};
+    const nameToInputMap = getFormInputs(form);
 
-    for (let i = 0; i < inputs.length; ++i)
+    return Object.fromEntries(Object.entries(nameToInputMap).map(([k, input]) =>
     {
-        const currInput = inputs[i];
-
-        if (currInput.nodeName === 'INPUT')
+        switch (input.type)
         {
-            const inputName = currInput.name;
-            const inputValue = currInput.value;
-            
-            output[inputName] = inputValue;
-        }
-    }// end for (let i = 0; i < inputs.length; ++i)
-    
-    return output;
+            case 'number':
+                return [k, Number(input.value)];
+            case 'submit':
+                return null;
+            default:
+                return [k, input.value];
+        }// end switch (input.type)
+    }).filter((entry) => entry !== null));
 };// end getFormValues
 
 const handleSubmit = (ev) =>
