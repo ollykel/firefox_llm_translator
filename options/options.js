@@ -33,19 +33,17 @@ const extractObj = (obj, ...fields) =>
 
 const getFormInputs = (form) =>
 {
-    let nameToInputMap = {};
+    let out = [];
 
     for (const elem of form.elements)
     {
         if (elem.nodeName === 'INPUT')
         {
-            const name = elem.name;
-
-            nameToInputMap[name] = elem;
+            out.push(elem);
         }
     }// end for (const elem of form.elements)
     
-    return nameToInputMap;
+    return out;
 };// end getFormInputs
 
 const getInputValue = (input) =>
@@ -111,8 +109,8 @@ const getInputValue = (input) =>
 
 const getFormValues = (form) =>
 {
-    const nameToInputMap = getFormInputs(form);
-    const nameValuePairs = Object.values(nameToInputMap)
+    const inputs = getFormInputs(form);
+    const nameValuePairs = inputs
         .map(getInputValue)
         .reduce((accum, kv) =>
         {
