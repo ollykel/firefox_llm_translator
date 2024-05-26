@@ -105,7 +105,7 @@ const getInputValue = (input) =>
         default:
             return null;
     }
-}// end getInputValue
+};// end getInputValue
 
 const getFormValues = (form) =>
 {
@@ -135,6 +135,30 @@ const getFormValues = (form) =>
 
     return nameValuePairs;
 };// end getFormValues
+
+const setFormInputs = (form, nameToValueMap) =>
+{
+    const inputs = getFormInputs(form);
+
+    for (const input of inputs)
+    {
+        const name = input.name;
+        const val = nameToValueMap[name];
+
+        if (input.type === 'checkbox')
+        {
+            input.checked = val.include(input.value);
+        }
+        else if (input.type === 'radio')
+        {
+            input.checked = (input.value === val);
+        }
+        else
+        {
+            input.value = val;
+        }
+    }// end for (const input of inputs)
+};// end setFormInputs
 
 const handleSubmit = (ev) =>
 {
