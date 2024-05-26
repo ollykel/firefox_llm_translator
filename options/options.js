@@ -1,5 +1,6 @@
 // Handles setting options.
 
+const KEY_API_SETTINGS = 'apiSettings';
 const OPTION_DEFAULTS =
 {
     "model": "gpt-3.5-turbo",
@@ -166,7 +167,7 @@ const handleSubmit = (ev) =>
 
     const formValues = getFormValues(ev.target);
 
-    browser.storage.sync.set(formValues);
+    browser.storage.sync.set(Object.fromEntries([[KEY_API_SETTINGS, formValues]]));
     alert('Extension settings saved.');
 };// end handleSubmit
 
