@@ -161,6 +161,17 @@ const setFormInputs = (form, nameToValueMap) =>
     }// end for (const input of inputs)
 };// end setFormInputs
 
+const loadSettings = () =>
+{
+    const form = document.getElementById("settings-form");
+
+    browser.storage.sync.get(KEY_API_SETTINGS)
+        .then(
+            (nameToValueMap) => setFormInputs(form, nameToValueMap[KEY_API_SETTINGS]),
+            logError
+        );
+};// end loadSettings
+
 const handleSubmit = (ev) =>
 {
     ev.preventDefault();
@@ -173,3 +184,4 @@ const handleSubmit = (ev) =>
 
 // === add listeners ===========================================================
 document.getElementById("settings-form").addEventListener("submit", handleSubmit);
+window.addEventListener("load", loadSettings);
