@@ -144,19 +144,23 @@ const setFormInputs = (form, nameToValueMap) =>
     for (const input of inputs)
     {
         const name = input.name;
-        const val = nameToValueMap[name];
 
-        if (input.type === 'checkbox')
+        if (name in nameToValueMap)
         {
-            input.checked = val.include(input.value);
-        }
-        else if (input.type === 'radio')
-        {
-            input.checked = (input.value === val);
-        }
-        else
-        {
-            input.value = val;
+            const val = nameToValueMap[name];
+
+            if (input.type === 'checkbox')
+            {
+                input.checked = val.include(input.value);
+            }
+            else if (input.type === 'radio')
+            {
+                input.checked = (input.value === val);
+            }
+            else
+            {
+                input.value = val;
+            }
         }
     }// end for (const input of inputs)
 };// end setFormInputs
