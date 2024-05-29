@@ -1,12 +1,9 @@
 // Handles setting options.
 
-const KEY_API_SETTINGS = 'apiSettings';
-const OPTION_DEFAULTS =
-{
-    "model": "gpt-3.5-turbo",
-    "apiKey": "",
-    "temperature": 0.7
-};
+const {
+  KEY_API_SETTINGS,
+  OPTION_DEFAULTS
+} = require('../config.json');
 
 const logError = (e) =>
 {
