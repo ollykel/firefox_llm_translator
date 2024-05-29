@@ -171,7 +171,13 @@ const loadSettings = () =>
 
     browser.storage.sync.get(KEY_API_SETTINGS)
         .then(
-            (nameToValueMap) => setFormInputs(form, nameToValueMap[KEY_API_SETTINGS]),
+            (nameToValueMap) =>
+            {
+                if (KEY_API_SETTINGS in nameToValueMap)
+                {
+                    setFormInputs(form, nameToValueMap[KEY_API_SETTINGS])
+                }
+            },
             logError
         );
 };// end loadSettings
