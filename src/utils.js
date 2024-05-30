@@ -1,5 +1,9 @@
 // Miscellaneous utils.
 
+const {
+  KEY_API_SETTINGS,
+} = require('../config.json');
+
 const formatJSON = (obj) =>
 {
     const formattedEntries = Object.entries(obj).map(([k, v]) => `"${k}": "${v}"`);
@@ -159,11 +163,25 @@ const setFormInputs = (form, nameToValueMap) =>
     }// end for (const input of inputs)
 };// end setFormInputs
 
+const loadSettings = async () =>
+{
+    return browser.storage.sync.get(KEY_API_SETTINGS);
+};// end loadSettings
+
+const saveSettings = async (settings) =>
+{
+    return browser.storage.sync.set(
+      Object.fromEntries([[KEY_API_SETTINGS, settings]])
+    );
+};// end saveSettings
+
 module.exports = {
   formatJSON,
   extractObj,
   getFormInputs,
   getInputValue,
   getFormValues,
-  setFormInputs
+  setFormInputs,
+  loadSettings,
+  saveSettings
 };
