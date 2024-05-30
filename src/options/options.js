@@ -11,7 +11,8 @@ const {
   getInputValue,
   getFormValues,
   setFormInputs,
-  loadSettings
+  loadSettings,
+  saveSettings
 } = require('../utils.js');
 
 const logError = (e) =>
@@ -31,10 +32,11 @@ const handleSubmit = (ev) =>
 {
     ev.preventDefault();
 
-    const formValues = getFormValues(ev.target);
+    const settings = getFormValues(ev.target);
 
-    browser.storage.sync.set(Object.fromEntries([[KEY_API_SETTINGS, formValues]]));
-    alert('Extension settings saved.');
+    saveSettings(settings)
+      .then(() => alert('Extension settings saved.'))
+      .catch(logError);
 };// end handleSubmit
 
 // === add listeners ===========================================================
