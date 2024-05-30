@@ -13,7 +13,8 @@ module.exports = [
         "alert": "readable",
         "document": "readable",
         "window": "readable",
-        "browser": "readable"
+        "browser": "readable",
+        "fetch": "readable"
       }
     }
   }

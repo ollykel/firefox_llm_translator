@@ -26,7 +26,7 @@ all : $(TARGETS)
 clean:
 	$(RM) $(TARGETS)
 
-lint : eslint.config.js $(TARGETS_JS)
+lint : eslint.config.js $(SRCS_JS)
 	npx eslint $(SRCS_JS)
 
 $(TARGET_DIR)/manifest.json :									$(SRC_DIR)/manifest.json
