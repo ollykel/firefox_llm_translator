@@ -2,7 +2,7 @@
 
 const {
   KEY_API_SETTINGS,
-} = require('../config.json');
+} = require('./config.json');
 
 const formatJSON = (obj) =>
 {
