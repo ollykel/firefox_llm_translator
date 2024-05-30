@@ -137,7 +137,7 @@
                     return out;
                 };// end getChildren
 
-                const visitor = {
+                const visitor = Object.freeze({
                     "getUID": () => uid,
                     "getTagName": () => tagName,
                     getChildren,
@@ -146,7 +146,7 @@
                     "setTranslatedContent": (newContent) => { translatedContent = newContent; },
                     "displayOrig": () => { element.innerHTML = origContent; },
                     "displayTranslated": () => { element.innerHTML = translatedContent; }
-                };
+                });
 
                 uidToVisitorMap[uid] = visitor;
 
