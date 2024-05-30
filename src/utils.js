@@ -165,7 +165,18 @@ const setFormInputs = (form, nameToValueMap) =>
 
 const loadSettings = async () =>
 {
-    return browser.storage.sync.get(KEY_API_SETTINGS);
+    return browser.storage.sync.get(KEY_API_SETTINGS)
+      .then((results) =>
+      {
+        if (KEY_API_SETTINGS in results)
+        {
+          return results[KEY_API_SETTINGS];
+        }
+        else
+        {
+          return {};
+        }
+      });
 };// end loadSettings
 
 const saveSettings = async (settings) =>
