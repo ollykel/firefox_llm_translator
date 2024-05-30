@@ -10,7 +10,8 @@ const {
   getFormInputs,
   getInputValue,
   getFormValues,
-  setFormInputs
+  setFormInputs,
+  loadSettings
 } = require('../utils.js');
 
 const logError = (e) =>
@@ -18,22 +19,13 @@ const logError = (e) =>
     console.log(`ERROR: ${e}`);
 };// end logError
 
-const loadSettings = () =>
+const initSettingsForm = () =>
 {
     const form = document.getElementById("settings-form");
 
-    browser.storage.sync.get(KEY_API_SETTINGS)
-        .then(
-            (nameToValueMap) =>
-            {
-                if (KEY_API_SETTINGS in nameToValueMap)
-                {
-                    setFormInputs(form, nameToValueMap[KEY_API_SETTINGS])
-                }
-            },
-            logError
-        );
-};// end loadSettings
+    loadSettings()
+      .then((nameToValueMap) => setFormInputs(form, nameToValueMap));
+};// end initSettingsForm
 
 const handleSubmit = (ev) =>
 {
@@ -47,4 +39,4 @@ const handleSubmit = (ev) =>
 
 // === add listeners ===========================================================
 document.getElementById("settings-form").addEventListener("submit", handleSubmit);
-window.addEventListener("load", loadSettings);
+window.addEventListener("load", initSettingsForm);
