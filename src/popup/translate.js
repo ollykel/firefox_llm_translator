@@ -9,7 +9,8 @@ const {
   getFormInputs,
   getInputValue,
   getFormValues,
-  setFormInputs
+  setFormInputs,
+  loadSettings
 } = require('../utils.js');
 
 const apiConfigBase = {
@@ -24,22 +25,13 @@ const logError = (e) =>
     console.log(`ERROR: ${e}`);
 };// end logError
 
-const loadSettings = () =>
+const initTranslateForm = () =>
 {
     const form = document.getElementById("translate-form");
 
-    browser.storage.sync.get(KEY_API_SETTINGS)
-        .then(
-            (nameToValueMap) =>
-            {
-                if (KEY_API_SETTINGS in nameToValueMap)
-                {
-                    setFormInputs(form, nameToValueMap[KEY_API_SETTINGS])
-                }
-            },
-            logError
-        );
-};// end loadSettings
+    loadSettings()
+      .then((nameToValueMap) => setFormInputs(form, nameToValueMap));
+};// end initTranslateForm
 
 const addEventListeners = () =>
 {
@@ -156,4 +148,4 @@ browser.runtime.onMessage.addListener((message) =>
 });
 
 // load settings
-window.addEventListener("load", loadSettings);
+window.addEventListener("load", initTranslateForm);
