@@ -1,7 +1,8 @@
 // Inject the content script at popup load time.
 
 const {
-  KEY_API_SETTINGS,
+    KEY_API_SETTINGS,
+    API_ENDPOINT
 } = require('../config.json');
 
 const {
@@ -12,13 +13,6 @@ const {
   setFormInputs,
   loadSettings
 } = require('../utils.js');
-
-const apiConfigBase = {
-    endpoint: 'https://api.openai.com/v1/chat/completions',
-    model: "gpt-3.5-turbo",
-    role: "user",
-    temperature: 0.7
-};// TODO: move hard-coded elements into config
 
 const logError = (e) =>
 {
@@ -40,15 +34,16 @@ const addEventListeners = () =>
         console.log(`error encountered while triggering translate page: ${err}`);
     };// end reportError
         
-    document.getElementById('translate-form').addEventListener("submit", (e) =>
+    document.getElementById('translate-form').addEventListener("submit", async (e) =>
     {
         e.preventDefault();
         
         const form = e.target;
-        const inputValues = getFormValues(form);
-        const apiKey = inputValues['apiKey'];
-        const targetLanguage = inputValues['target-language'];
-        const characterLimit = Number(inputValues['character-limit']);
+        const settings = await loadSettings();
+        const formValues = getFormValues(form);
+        const apiKey = formValues['apiKey'];
+        const targetLanguage = formValues['target-language'];
+        const characterLimit = Number(formValues['character-limit']);
         
         const triggerTranslatePage = (tabs) =>
         {
@@ -57,7 +52,11 @@ const addEventListeners = () =>
               parameters: {
                   targetLanguage,
                   characterLimit,
-                  apiConfig: { ...apiConfigBase, key: apiKey }
+                  apiConfig: {
+                      ...settings,
+                      endpoint: API_ENDPOINT,
+                      key: apiKey
+                  }
               }
             });
         };// end triggerTranslatePage
