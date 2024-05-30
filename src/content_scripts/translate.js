@@ -42,7 +42,7 @@
     {
         let currObj = obj;
 
-        for (let field of fields)
+        for (const field of fields)
         {
             if (currObj.hasOwnProperty(field))
             {
@@ -91,7 +91,7 @@
         const   ELEMENT_UID_ATTR_NAME   = 'llm_autotranslate_uid';
 
         let elementUIDCount = 0;
-        let uidToVisitorMap = {};
+        const uidToVisitorMap = {};
 
         const getElementUID = (element) =>
         {
@@ -127,7 +127,7 @@
 
                 const getChildren = () =>
                 {
-                    let out = [];
+                    const out = [];
 
                     for (const child of element.children)
                     {
@@ -142,7 +142,7 @@
                     "getTagName": () => tagName,
                     getChildren,
                     "getOrigContent": () => origContent,
-                    "getTranslatedContent": () => translatedText,
+                    "getTranslatedContent": () => translatedContent,
                     "setTranslatedContent": (newContent) => { translatedContent = newContent; },
                     "displayOrig": () => { element.innerHTML = origContent; },
                     "displayTranslated": () => { element.innerHTML = translatedContent; }
@@ -197,7 +197,7 @@
             }
             else
             {
-                let out = [];
+                const out = [];
 
                 for (const visitor of elementVisitor.getChildren())
                 {
@@ -212,7 +212,7 @@
         {
             let currBatch = {};
             let currCharCount = 0;
-            let batches = [];
+            const batches = [];
 
             for (const elemVisitor of elementVisitors)
             {
@@ -355,7 +355,7 @@
                     catch (err)
                     {
                         error = `error parsing response content: ${err}`;
-                        hasError = true;
+                        errorFlag = true;
                     }
                 }
             }
