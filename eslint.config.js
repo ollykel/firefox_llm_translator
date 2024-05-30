@@ -7,6 +7,8 @@ module.exports = [
     },
     "languageOptions": {
       "globals": {
+        "require": "readable",
+        "module": "readable",
         "console": "readable",
         "alert": "readable",
         "document": "readable",
