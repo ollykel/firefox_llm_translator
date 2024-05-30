@@ -2,6 +2,7 @@
 
 const {
   KEY_API_SETTINGS,
+  OPTION_DEFAULTS
 } = require('./config.json');
 
 const formatJSON = (obj) =>
@@ -170,11 +171,13 @@ const loadSettings = async () =>
       {
         if (KEY_API_SETTINGS in results)
         {
-          return results[KEY_API_SETTINGS];
+          const defaultSettings = OPTION_DEFAULTS;
+
+          return { ...OPTION_DEFAULTS, ...results[KEY_API_SETTINGS] };
         }
         else
         {
-          return {};
+          return { ...OPTION_DEFAULTS };
         }
       });
 };// end loadSettings
