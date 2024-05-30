@@ -2,6 +2,10 @@ input {
     display: block;
 }
 
+select {
+    display: block;
+}
+
 .notif {
     display: none;
 }
