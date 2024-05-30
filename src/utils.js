@@ -166,13 +166,13 @@ const setFormInputs = (form, nameToValueMap) =>
 
 const loadSettings = async () =>
 {
+    const defaultSettings = OPTION_DEFAULTS;
+
     return browser.storage.sync.get(KEY_API_SETTINGS)
       .then((results) =>
       {
         if (KEY_API_SETTINGS in results)
         {
-          const defaultSettings = OPTION_DEFAULTS;
-
           return { ...defaultSettings, ...results[KEY_API_SETTINGS] };
         }
         else
