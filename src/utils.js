@@ -173,11 +173,11 @@ const loadSettings = async () =>
         {
           const defaultSettings = OPTION_DEFAULTS;
 
-          return { ...OPTION_DEFAULTS, ...results[KEY_API_SETTINGS] };
+          return { ...defaultSettings, ...results[KEY_API_SETTINGS] };
         }
         else
         {
-          return { ...OPTION_DEFAULTS };
+          return { ...defaultSettings };
         }
       });
 };// end loadSettings
