@@ -5,7 +5,6 @@ WEBPACK=npx webpack
 # targets
 TARGET_DIR=target
 SRC_DIR=src
-SRCS_JS=$(SRC_DIR)/content_scripts/translate.js $(SRC_DIR)/options/options.js $(SRC_DIR)/popup/translate.js
 TARGETS_JS=$(TARGET_DIR)/content_scripts/translate.js $(TARGET_DIR)/options/options.js $(TARGET_DIR)/popup/translate.js
 TARGETS=$(TARGET_DIR)/manifest.json $(TARGET_DIR)/options/options.html $(TARGET_DIR)/popup/translate.html $(TARGET_DIR)/popup/translate.css $(TARGETS_JS)
 
@@ -26,8 +25,8 @@ all : $(TARGETS)
 clean:
 	$(RM) $(TARGETS)
 
-lint : eslint.config.js $(SRCS_JS)
-	npx eslint $(SRCS_JS)
+lint : eslint.config.js
+	npx eslint
 
 $(TARGET_DIR)/manifest.json :									$(SRC_DIR)/manifest.json
 
