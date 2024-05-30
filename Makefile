@@ -5,7 +5,7 @@ WEBPACK=npx webpack
 # targets
 TARGET_DIR=target
 SRC_DIR=src
-TARGETS=$(TARGET_DIR)/manifest.json $(TARGET_DIR)/utils.js $(TARGET_DIR)/content_scripts/translate.js $(TARGET_DIR)/options/options.html $(TARGET_DIR)/options/options.js $(TARGET_DIR)/popup/translate.html $(TARGET_DIR)/popup/translate.js $(TARGET_DIR)/popup/translate.css
+TARGETS=$(TARGET_DIR)/manifest.json $(TARGET_DIR)/content_scripts/translate.js $(TARGET_DIR)/options/options.html $(TARGET_DIR)/options/options.js $(TARGET_DIR)/popup/translate.html $(TARGET_DIR)/popup/translate.js $(TARGET_DIR)/popup/translate.css
 
 $(TARGET_DIR)/%.js : $(SRC_DIR)/%.js
 	$(WEBPACK)
@@ -26,8 +26,6 @@ clean:
 
 
 $(TARGET_DIR)/manifest.json :									$(SRC_DIR)/manifest.json
-
-$(TARGET_DIR)/utils.js :											$(SRC_DIR)/utils.js webpack.config.js
 
 $(TARGET_DIR)/content_scripts/translate.js :	$(SRC_DIR)/content_scripts/translate.js webpack.config.js
 
