@@ -33,11 +33,11 @@ $(TARGET_DIR)/content_scripts/translate.js :	$(SRC_DIR)/content_scripts/translat
 
 $(TARGET_DIR)/options/options.html :					$(SRC_DIR)/options/options.html
 
-$(TARGET_DIR)/options/options.js :						$(SRC_DIR)/options/options.js $(SRC_DIR)/config.json webpack.config.js
+$(TARGET_DIR)/options/options.js :						$(SRC_DIR)/options/options.js $(SRC_DIR)/config.json $(SRC_DIR)/utils.js webpack.config.js
 
 $(TARGET_DIR)/popup/translate.html :					$(SRC_DIR)/popup/translate.html
 
-$(TARGET_DIR)/popup/translate.js :						$(SRC_DIR)/popup/translate.js webpack.config.js
+$(TARGET_DIR)/popup/translate.js :						$(SRC_DIR)/popup/translate.js $(SRC_DIR)/config.json $(SRC_DIR)/utils.js webpack.config.js
 
 $(TARGET_DIR)/popup/translate.css :						$(SRC_DIR)/popup/translate.css
 
