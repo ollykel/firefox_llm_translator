@@ -46,6 +46,21 @@ const getElementVisitor = (element) =>
             return id;
         };// end getElemRID
 
+        const getElementAttrMap = (elem) =>
+        {
+            const out = {};
+
+            for (const attr of elem.attributes)
+            {
+                const key = attr.name;
+                const val = attr.value;
+
+                out[key] = val;
+            }// end for (const attr of elem.attributes)
+
+            return out;
+        };// end getElementAttrMap
+
         const getChildren = () =>
         {
             const out = [];
