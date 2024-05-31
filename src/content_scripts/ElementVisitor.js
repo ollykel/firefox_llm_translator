@@ -183,14 +183,42 @@ const getElementVisitor = (element) =>
             return "" + origContentMinimized;
         };// end getOrigContentMinimized
 
+        const setTranslatedContentMinimized = (minimizedContent) =>
+        {
+            const dummyElement = document.createElement("div");
+
+            dummyElement.innerHTML = minimizedContent;
+
+            const restoreElement = (elem) =>
+            {
+                const rid = elem.getAttribute("rid");
+
+                if ((rid !== null) && (rid in ridToAttrMap))
+                {
+                    const attrMap = ridToAttrMap[rid];
+
+                    replaceElementAttrs(elem, attrMap);
+                }
+
+                for (const child of elem.children)
+                {
+                    restoreElement(child);
+                }// end for (const child of elem.children)
+            };// end restoreElement
+
+            restoreElement(dummyElement);
+            translatedContent = dummyElement.innerHTML;
+        };// end setTranslatedContentMinimized
+
         const visitor = Object.freeze({
             getUID: () => uid,
             getTagName: () => tagName,
             getChildren,
-            getOrigContentMinimized,
             getOrigContent: () => origContent,
+            getOrigContentMinimized,
             getTranslatedContent: () => translatedContent,
             setTranslatedContent: (newContent) => { translatedContent = newContent; },
+            setTranslatedContentMinimized,
             displayOrig: () => { element.innerHTML = origContent; },
             displayTranslated: () => { element.innerHTML = translatedContent; }
         });
