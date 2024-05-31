@@ -33,7 +33,18 @@ const getElementVisitor = (element) =>
         const tagName = element.tagName.toLowerCase();
         const origContent = "" + element.innerHTML;
 
+        const ridToAttrMap = {};
+        let ridCount = 0;
         let translatedContent = "" + element.innerHTML;
+
+        const getElemRID = (elem) =>
+        {
+            const id = `${ridCount}`;
+
+            ++ridCount;
+
+            return id;
+        };// end getElemRID
 
         const getChildren = () =>
         {
@@ -47,10 +58,78 @@ const getElementVisitor = (element) =>
             return out;
         };// end getChildren
 
+        const getMinimizedContent = () =>
+        {
+            // each handler function should return a string
+
+            const handleTerminalDefault = (elem) =>
+            {
+                const rid = getElemRID(elem);
+                
+                return `<${elem.tagName} rid="${rid}" />`;
+            };// end handleTerminalDefault
+
+            const handleIgnore = (elem) => "";
+
+            const elemHandlers = Object.freeze({
+                img: handleTerminalDefault,// TODO: write special handler for alt
+                hr: handleTerminalDefault,
+                br: handleTerminalDefault,
+                script: handleIgnore
+            });
+
+            const handleDefault = (elem) =>
+            {
+                const components = [];
+
+                for (const node of elem.childNodes)
+                {
+                    switch (node.nodeType)
+                    {
+                        case 1:// element
+                            // dispatch based on node name
+                            const elemType = node.tagName;
+                            const handleElem = (elemType in elemHandlers) ?
+                                elemHandlers[elemType]
+                                : handleDefault;
+
+                            components.push(handleElem(node));
+                            if (elemType in elemHandlers)
+                            {
+                                const handleElem = elemHandlers[elemType];
+
+                                components.push(handleElem(node));
+                            }
+                            else
+                            {
+                                const rid = getElemRID(elem);
+                                const openTag = `<${elem.tagName} rid="${rid}">`;
+                                const closeTag = `</${elem.tagName}>`;
+
+                                components.push([openTag, handleDefault(node), closeTag].join(''));
+                            }
+                            break;
+                        case 3:// text
+                            components.push(node.textContent);
+                            break;
+                        default:
+                            // ignore all other types of nodes
+                    }// end switch (node.nodeType)
+                }// end for (const node of elem.childNodes)
+
+                return components.join('');
+            };// end handleDefault
+
+            return handleDefault(element);
+        };// end getMinimizedContent
+        
+        const origContentMinimized = getMinimizedContent(element);
+
         const visitor = Object.freeze({
             getUID: () => uid,
             getTagName: () => tagName,
             getChildren,
+            getMinimizedContent,
             getOrigContent: () => origContent,
             getTranslatedContent: () => translatedContent,
             setTranslatedContent: (newContent) => { translatedContent = newContent; },
