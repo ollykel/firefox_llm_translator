@@ -170,13 +170,24 @@ const getElementVisitor = (element) =>
             return handleDefault(element);
         };// end getMinimizedContent
         
-        const origContentMinimized = getMinimizedContent(element);
+        // should only generate once, and only when needed.
+        let origContentMinimized = null;
+
+        const getOrigContentMinimized = () =>
+        {
+            if (origContentMinimized === null)
+            {
+                origContentMinimized = getMinimizedContent(element);
+            }
+
+            return "" + origContentMinimized;
+        };// end getOrigContentMinimized
 
         const visitor = Object.freeze({
             getUID: () => uid,
             getTagName: () => tagName,
             getChildren,
-            getMinimizedContent,
+            getOrigContentMinimized,
             getOrigContent: () => origContent,
             getTranslatedContent: () => translatedContent,
             setTranslatedContent: (newContent) => { translatedContent = newContent; },
