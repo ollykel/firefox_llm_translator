@@ -385,7 +385,7 @@
     const translateElemContentBatches = (() => {
         const formatPrompt = ({ elemContentBatch, targetLanguage }) =>
         {
-            const batchStr = JSON.stringify(elemContentBatch);
+            const batchStr = JSON.stringify(elemContentBatch, null, 2);
 
             return (
 `Please translate the values in the json object provided below from whatever the
