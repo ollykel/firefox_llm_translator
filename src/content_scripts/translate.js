@@ -294,7 +294,7 @@
 
             if (elemVisitor !== null)
             {
-                elemVisitor.setTranslatedContent(translatedContent);
+                elemVisitor.setTranslatedContentMinimized(translatedContent);
                 elemVisitor.displayTranslated();
             }
         }// end for (const [elemUID, translatedContent] of Object.entries(translationTable))
