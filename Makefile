@@ -28,17 +28,17 @@ clean:
 lint : eslint.config.js
 	npx eslint
 
-$(TARGET_DIR)/manifest.json :									$(SRC_DIR)/manifest.json
+$(TARGET_DIR)/manifest.json :					$(SRC_DIR)/manifest.json
 
-$(TARGET_DIR)/content_scripts/translate.js :	$(SRC_DIR)/content_scripts/translate.js webpack.config.js
+$(TARGET_DIR)/content_scripts/translate.js :	$(SRC_DIR)/content_scripts/translate.js $(SRC_DIR)/content_scripts/ElementVisitor.js webpack.config.js
 
-$(TARGET_DIR)/options/options.html :					$(SRC_DIR)/options/options.html
+$(TARGET_DIR)/options/options.html :			$(SRC_DIR)/options/options.html
 
-$(TARGET_DIR)/options/options.js :						$(SRC_DIR)/options/options.js $(SRC_DIR)/config.json $(SRC_DIR)/utils.js webpack.config.js
+$(TARGET_DIR)/options/options.js :				$(SRC_DIR)/options/options.js $(SRC_DIR)/config.json $(SRC_DIR)/utils.js webpack.config.js
 
-$(TARGET_DIR)/popup/translate.html :					$(SRC_DIR)/popup/translate.html
+$(TARGET_DIR)/popup/translate.html :			$(SRC_DIR)/popup/translate.html
 
-$(TARGET_DIR)/popup/translate.js :						$(SRC_DIR)/popup/translate.js $(SRC_DIR)/config.json $(SRC_DIR)/utils.js webpack.config.js
+$(TARGET_DIR)/popup/translate.js :				$(SRC_DIR)/popup/translate.js $(SRC_DIR)/config.json $(SRC_DIR)/utils.js webpack.config.js
 
-$(TARGET_DIR)/master.css :								$(SRC_DIR)/master.css
+$(TARGET_DIR)/master.css :						$(SRC_DIR)/master.css
 
