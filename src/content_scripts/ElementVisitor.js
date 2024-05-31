@@ -37,6 +37,8 @@ const getElementVisitor = (element) =>
         let ridCount = 0;
         let translatedContent = "" + element.innerHTML;
 
+        // Returns the relative id of a given element (i.e. its unique id
+        // relative to <element>, the ancestor element in question).
         const getElemRID = (elem) =>
         {
             const id = `${ridCount}`;
@@ -106,6 +108,8 @@ const getElementVisitor = (element) =>
             const handleTerminalDefault = (elem) =>
             {
                 const rid = getElemRID(elem);
+
+                ridToAttrMap[rid] = getElementAttrMap(elem);
                 
                 return `<${elem.tagName} rid="${rid}" />`;
             };// end handleTerminalDefault
@@ -143,9 +147,11 @@ const getElementVisitor = (element) =>
                             }
                             else
                             {
-                                const rid = getElemRID(elem);
-                                const openTag = `<${elem.tagName} rid="${rid}">`;
-                                const closeTag = `</${elem.tagName}>`;
+                                const rid = getElemRID(node);
+                                const openTag = `<${node.tagName} rid="${rid}">`;
+                                const closeTag = `</${node.tagName}>`;
+
+                                ridToAttrMap[rid] = getElementAttrMap(node);
 
                                 components.push([openTag, handleDefault(node), closeTag].join(''));
                             }
