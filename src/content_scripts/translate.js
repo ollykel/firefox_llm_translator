@@ -135,7 +135,7 @@
             for (const elemVisitor of elementVisitors)
             {
                 const elemUID = elemVisitor.getUID();
-                const elemContent = elemVisitor.getOrigContent();
+                const elemContent = elemVisitor.getOrigContentMinimized();
                 const nextCharCount = currCharCount + elemContent.length;
 
                 maxCharCount -= elemContent.length;

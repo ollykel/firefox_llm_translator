@@ -134,11 +134,7 @@ const getElementVisitor = (element) =>
                         case 1:// element
                             // dispatch based on node name
                             const elemType = node.tagName;
-                            const handleElem = (elemType in elemHandlers) ?
-                                elemHandlers[elemType]
-                                : handleDefault;
 
-                            components.push(handleElem(node));
                             if (elemType in elemHandlers)
                             {
                                 const handleElem = elemHandlers[elemType];
