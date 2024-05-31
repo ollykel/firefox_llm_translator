@@ -61,6 +61,32 @@ const getElementVisitor = (element) =>
             return out;
         };// end getElementAttrMap
 
+        const replaceElementAttrs = (elem, attrMap) =>
+        {
+            const attrsToSet = { ...attrMap };
+
+            for (const attr of elem.attributes)
+            {
+                const key = attr.name;
+
+                if (key in attrMap)
+                {
+                    elem.setAttribute(key, attrMap[key]);
+
+                    delete attrsToSet[key];
+                }
+                else
+                {
+                    elem.removeAttribute(key);
+                }
+            }// end for (const attr of elem.attributes)
+
+            for (const [key, val] of Object.entries(attrsToSet))
+            {
+                elem.setAttribute(key, val);
+            }// end for (const [key, val] of Object.entries(attrsToSet))
+        };// end replaceElementAttrs
+
         const getChildren = () =>
         {
             const out = [];
