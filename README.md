@@ -34,6 +34,7 @@ the process of translation. Do not use this extension on any webpage which
 contains personal or security-critical information.
 
 ## Building and Installing
+
 To build the extension, simply run make in the current directory. The built
 extension will be contained in the directory target/. npm is required for
 building this project; all dependencies are listed in package.json.
@@ -59,6 +60,20 @@ To install the extension permanently, follow the following steps:
   firefox\_llm\_autotranslate.xpi. 
 - You will be prompted to confirm whether to add this extension, as it is
   unverified. If you choose to, click "Add".
+
+## Settings
+
+To locate the settings menu, go to about:addons and select the module named "LLM
+Autotranslate", then select the "Preferences" tab.
+
+Settings options include:
+
+- (default) Model: The ChatGPT model to use by default. Default value is
+  gpt-3.5-turbo.
+- API Key: The API key to use by default.
+- Temperature: A numeric value which determines how creative or literal
+  ChatGPT's output is. Higher values enable more creativity, while lower values
+  lead to more literal output. Default value is 0.7.
 
 ## Known Problems
 
