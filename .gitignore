@@ -3,3 +3,4 @@
 /node_modules/
 package-lock.json
 /target/
+firefox_llm_autotranslate.xpi
