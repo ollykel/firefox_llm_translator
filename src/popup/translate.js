@@ -43,7 +43,7 @@ const addEventListeners = () =>
         const formValues = getFormValues(form);
         const apiKey = formValues['apiKey'];
         const targetLanguage = formValues['target-language'];
-        const characterLimit = Number(formValues['character-limit']);
+        const characterLimit = Number(formValues['characterLimit']);
         
         const triggerTranslatePage = (tabs) =>
         {
