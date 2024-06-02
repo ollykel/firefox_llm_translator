@@ -1,4 +1,4 @@
-const   ELEMENT_UID_ATTR_NAME   = 'llm_autotranslate_uid';
+const   ELEMENT_UID_ATTR_NAME   = 'llm_translator_uid';
 
 let elementUIDCount = 0;
 const uidToVisitorMap = {};

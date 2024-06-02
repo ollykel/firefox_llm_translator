@@ -7,7 +7,7 @@ TARGET_DIR=target
 SRC_DIR=src
 TARGETS_JS=$(TARGET_DIR)/content_scripts/translate.js $(TARGET_DIR)/options/options.js $(TARGET_DIR)/popup/translate.js
 TARGETS=$(TARGET_DIR)/manifest.json $(TARGET_DIR)/options/options.html $(TARGET_DIR)/popup/translate.html $(TARGET_DIR)/master.css $(TARGETS_JS)
-PACKAGE=firefox_llm_autotranslate.xpi
+PACKAGE=llm_translator.xpi
 
 $(TARGET_DIR)/%.js : $(SRC_DIR)/%.js
 	$(WEBPACK)

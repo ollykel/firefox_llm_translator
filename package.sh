@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dest="${PWD}/firefox_llm_autotranslate.xpi"
+dest="${PWD}/llm_translator.xpi"
 files=(
 content_scripts/translate.js
 options/options.html

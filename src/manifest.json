@@ -1,6 +1,6 @@
 {
 	"manifest_version": 3,
-  "name": "LLM Autotranslate",
+  "name": "LLM Translator",
   "version": "0.1",
   "description": "Automatically translate the content of web pages using the API of an LLM such as ChatGPT.",
 
@@ -17,7 +17,7 @@
   ],
 
   "action": {
-    "default_title": "LLM Autotranslate",
+    "default_title": "LLM Translator",
     "default_popup": "popup/translate.html"
   },
 
@@ -35,7 +35,7 @@
 
   "browser_specific_settings": {
     "gecko": {
-      "id": "llm_autotranslate@github.com",
+      "id": "llm_translator@github.com",
       "strict_min_version": "42.0"
     }
   }

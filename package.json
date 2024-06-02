@@ -1,5 +1,5 @@
 {
-	"name": "firefox_llm_autotranslate",
+	"name": "firefox_llm_translator",
 	"version": "0.1.0",
 	"scripts": {
 		"test": "jest"
