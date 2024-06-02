@@ -33,6 +33,33 @@ Keep in mind that any content on the webpage may possibly be sent to OpenAI in
 the process of translation. Do not use this extension on any webpage which
 contains personal or security-critical information.
 
+## Building and Installing
+To build the extension, simply run make in the current directory. The built
+extension will be contained in the directory target/. npm is required for
+building this project; all dependencies are listed in package.json.
+
+To install the extension as-is, you will need [Firefox Developer
+Edition](https://www.mozilla.org/en-US/firefox/developer/).
+
+To load the extension temporarily, follow the following steps:
+
+- Navigate to about:debugging
+- Click the "This Firefox" button on the top-left of the page.
+- Under the "Temporary Extensions" menu in the center of the page, click the
+  button "Load Temporary Add-on".
+- You will be shown a file selection menu. Find the "target" directory of this
+  repository and select any file within it.
+
+To install the extension permanently, follow the following steps:
+
+- Navigate to about:addons
+- Click the settings button to the right of "Manage Your Extensions", and select
+  "Install Add-on From File"
+- Navigate to this repository's directory, then select
+  firefox\_llm\_autotranslate.xpi. 
+- You will be prompted to confirm whether to add this extension, as it is
+  unverified. If you choose to, click "Add".
+
 ## Known Problems
 
 The quality of the translations is wholly dependent upon LLM provided by OpenAI.
