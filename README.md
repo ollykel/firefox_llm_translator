@@ -43,5 +43,5 @@ the translated text.
 Not every query to the LLM will be successful. Currently unsuccessful queries
 are not retransmitted during a single translation request.
 
-Many sites will have a content policy which disables API queries to openai.
+Many sites have a content security policy which disables API queries to openai.
 There is currently no workaround to this problem.
