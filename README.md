@@ -87,3 +87,12 @@ are not retransmitted during a single translation request.
 
 Many sites have a content security policy which disables API queries to openai.
 There is currently no workaround to this problem.
+
+## License
+
+This repository is available according to the terms of the MIT license. (see
+[LICENSE](./LICENSE))
+
+## Author
+
+Project created by Oliver Kelton <oakelton@gmail.com>.
