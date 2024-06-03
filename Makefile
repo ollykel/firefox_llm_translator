@@ -30,19 +30,31 @@ clean:
 lint : eslint.config.js
 	npx eslint
 
-$(TARGET_DIR)/manifest.json :					$(SRC_DIR)/manifest.json
+$(TARGET_DIR)/:
+	mkdir -p $@
 
-$(TARGET_DIR)/content_scripts/translate.js :	$(SRC_DIR)/content_scripts/translate.js $(SRC_DIR)/content_scripts/ElementVisitor.js webpack.config.js
+$(TARGET_DIR)/content_scripts/:
+	mkdir -p $@
 
-$(TARGET_DIR)/options/options.html :			$(SRC_DIR)/options/options.html
+$(TARGET_DIR)/popup/:
+	mkdir -p $@
 
-$(TARGET_DIR)/options/options.js :				$(SRC_DIR)/options/options.js $(SRC_DIR)/config.json $(SRC_DIR)/utils.js webpack.config.js
+$(TARGET_DIR)/options/:
+	mkdir -p $@
 
-$(TARGET_DIR)/popup/translate.html :			$(SRC_DIR)/popup/translate.html
+$(TARGET_DIR)/manifest.json :					$(TARGET_DIR)/ $(SRC_DIR)/manifest.json
 
-$(TARGET_DIR)/popup/translate.js :				$(SRC_DIR)/popup/translate.js $(SRC_DIR)/config.json $(SRC_DIR)/utils.js webpack.config.js
+$(TARGET_DIR)/content_scripts/translate.js :	$(TARGET_DIR)/content_scripts/ $(SRC_DIR)/content_scripts/translate.js $(SRC_DIR)/content_scripts/ElementVisitor.js webpack.config.js
 
-$(TARGET_DIR)/master.css :						$(SRC_DIR)/master.css
+$(TARGET_DIR)/options/options.html :			$(TARGET_DIR)/options/ $(SRC_DIR)/options/options.html
+
+$(TARGET_DIR)/options/options.js :				$(TARGET_DIR)/options/ $(SRC_DIR)/options/options.js $(SRC_DIR)/config.json $(SRC_DIR)/utils.js webpack.config.js
+
+$(TARGET_DIR)/popup/translate.html :			$(TARGET_DIR)/popup/ $(SRC_DIR)/popup/translate.html
+
+$(TARGET_DIR)/popup/translate.js :				$(TARGET_DIR)/popup/ $(SRC_DIR)/popup/translate.js $(SRC_DIR)/config.json $(SRC_DIR)/utils.js webpack.config.js
+
+$(TARGET_DIR)/master.css :						$(TARGET_DIR)/ $(SRC_DIR)/master.css
 
 $(PACKAGE) :									$(TARGETS) package.sh
 	./package.sh
