@@ -16,7 +16,7 @@
     // === GLOBAL CONSTANTS ====================================================
     //
     // =========================================================================
-    const   MAX_BATCH_CHAR_COUNT        = 2000;
+    const   { MAX_BATCH_CHAR_COUNT }    = require('../config.json');
     
     // New pipeline:
     //  1. Recursively identify all target elements

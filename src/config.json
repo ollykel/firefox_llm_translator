@@ -1,6 +1,7 @@
 {
   "KEY_API_SETTINGS": "apiSettings",
   "API_ENDPOINT": "https://api.openai.com/v1/chat/completions",
+  "MAX_BATCH_CHAR_COUNT": 3000,
   "OPTION_DEFAULTS": {
     "model": "gpt-3.5-turbo",
     "role": "user",
