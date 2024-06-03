@@ -5,6 +5,7 @@
     "model": "gpt-3.5-turbo",
     "role": "user",
     "apiKey": "",
-    "temperature": 0.7
+    "temperature": 0.7,
+    "characterLimit": 4000
   }
 }
