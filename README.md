@@ -1,4 +1,4 @@
-# Firefox LLM Autotranslate
+# Firefox LLM Translator
 
 Automatically translate the webpage you are viewing from whatever language it is
 in to the language of your choice, using the magic of ChatGPT.
@@ -57,14 +57,14 @@ To install the extension permanently, follow the following steps:
 - Click the settings button to the right of "Manage Your Extensions", and select
   "Install Add-on From File"
 - Navigate to this repository's directory, then select
-  firefox\_llm\_autotranslate.xpi. 
+  llm\_translator.xpi. 
 - You will be prompted to confirm whether to add this extension, as it is
   unverified. If you choose to, click "Add".
 
 ## Settings
 
 To locate the settings menu, go to about:addons and select the module named "LLM
-Autotranslate", then select the "Preferences" tab.
+Translator", then select the "Preferences" tab.
 
 Settings options include:
 
