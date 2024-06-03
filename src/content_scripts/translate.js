@@ -38,39 +38,11 @@
         alert(`Error: ${errMsg}`);
     };// end const logError = (errMsg) =>
 
-    const extractObj = (obj, ...fields) =>
-    {
-        let currObj = obj;
-
-        for (const field of fields)
-        {
-            if (currObj.hasOwnProperty(field))
-            {
-                currObj = currObj[field];
-            }
-            else
-            {
-                return null;
-            }
-        }// end for (let field of fields)
-
-        return currObj;
-    };// end extractObj
-
-    const mergeObj = (orig, ...toMerge) =>
-    {
-        for (const obj of toMerge)
-        {
-            for (const [k, v] of Object.entries(obj))
-            {
-                orig[k] = v;
-            }// end for (const [k, v] of Object.values(obj))
-        }// end for (const obj of toMerge)
-
-        return orig;
-    };// end mergeObj
-
-    const isOnlyWhitespace = (str) => str.trim().length === 0;
+    const {
+      extractObj,
+      mergeObj,
+      isOnlyWhitespace
+    } = require('../utils.js');
 
     const notifyRequestProcessing = () =>
     {

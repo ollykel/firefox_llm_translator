@@ -189,9 +189,26 @@ const saveSettings = async (settings) =>
     );
 };// end saveSettings
 
+const mergeObj = (orig, ...toMerge) =>
+{
+    for (const obj of toMerge)
+    {
+        for (const [k, v] of Object.entries(obj))
+        {
+            orig[k] = v;
+        }// end for (const [k, v] of Object.values(obj))
+    }// end for (const obj of toMerge)
+
+    return orig;
+};// end mergeObj
+
+const isOnlyWhitespace = (str) => str.trim().length === 0;
+
 module.exports = {
   formatJSON,
   extractObj,
+  mergeObj,
+  isOnlyWhitespace,
   getFormInputs,
   getInputValue,
   getFormValues,
