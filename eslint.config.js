@@ -1,3 +1,5 @@
+const eslintPluginReact = require('eslint-plugin-react');
+
 module.exports = [
   {
     "files": ["src/**/*.js"],
@@ -17,6 +19,9 @@ module.exports = [
         "browser": "readable",
         "fetch": "readable"
       }
+    },
+    "plugins": {
+      "react": eslintPluginReact
     }
   }
 ];
