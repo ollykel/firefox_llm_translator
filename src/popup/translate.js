@@ -1,5 +1,8 @@
 // Inject the content script at popup load time.
 
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+
 const {
     KEY_API_SETTINGS,
     API_ENDPOINT
@@ -14,18 +17,62 @@ const {
   loadSettings
 } = require('../utils.js');
 
+import TranslateForm from './TranslateForm';
+
 const logError = (e) =>
 {
     console.log(`ERROR: ${e}`);
 };// end logError
 
-const initTranslateForm = () =>
+const reportError = (err) =>
 {
-    const form = document.getElementById("translate-form");
+    console.log(`error encountered while triggering translate page: ${err}`);
+};// end reportError
 
-    loadSettings()
-      .then((nameToValueMap) => setFormInputs(form, nameToValueMap));
-};// end initTranslateForm
+const handleSubmitTranslateForm = async (values) =>
+{
+    const defaultSettings = await loadSettings();
+    const { targetLanguage, characterLimit, apiKey, temperature } = values;
+    
+    const triggerTranslatePage = (tabs) =>
+    {
+        browser.tabs.sendMessage(tabs[0].id, {
+          command: "translatePage",
+          parameters: {
+              targetLanguage,
+              characterLimit,
+              apiConfig: {
+                  ...defaultSettings,
+                  endpoint: API_ENDPOINT,
+                  temperature: temperature,
+                  key: apiKey
+              }
+          }
+        });
+    };// end triggerTranslatePage
+    
+    browser.tabs
+      .query({ active: true, currentWindow: true})
+      .then(triggerTranslatePage)
+      .catch(reportError);
+};// end handleSubmitTranslateForm
+
+const initPage = async () =>
+{
+  const el = document.getElementById('root');
+  const root = ReactDOM.createRoot(el);
+  const defaultSettings = await loadSettings();
+
+  root.render(
+    <div id="translate-page">
+      <h1>Translate LLM</h1>
+      <TranslateForm
+        defaultValues={defaultSettings}
+        onSubmit={handleSubmitTranslateForm}
+      />
+    </div>
+  );
+};// end initPage
 
 const addEventListeners = () =>
 {
@@ -147,4 +194,4 @@ browser.runtime.onMessage.addListener((message) =>
 });
 
 // load settings
-window.addEventListener("load", initTranslateForm);
+window.addEventListener("load", initPage);

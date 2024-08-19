@@ -7,26 +7,17 @@
 		<title>Translate LLM</title>
 	</head>
 	<body>
-        <h1>Translate LLM</h1>
-        <form id="translate-form">
-            <label for="target-language">Target Language: </label>
-            <input name="target-language" type="text" required />
-            <label for="characterLimit">Character Limit: </label>
-            <input name="characterLimit" type="number" min="1000" required />
-            <label for="apiKey">API Key: </label>
-            <input name="apiKey" type="password" required />
-            <label for="temperature">Temperature:</label>
-            <input type="number" id="temperature" name="temperature" step="0.01" value="0.7" min="0.0" max="1.0" required />
-            <button type="submit">Translate</button>
-        </form>
-        <div id="notifs">
-            <span id="notif-request-processing" class="notif">Processing translation request ...</span>
-        </div>
-        <div id="toggle-display-controls">
-            <button id="display-original-page">Show Original</button>
-            <button id="display-translated-page">Show Translation</button>
-        </div>
-        <script src="translate.js"></script>
+    <!-- Needed for React -->
+    <div id="root"></div>
+
+    <div id="notifs">
+        <span id="notif-request-processing" class="notif">Processing translation request ...</span>
+    </div>
+    <div id="toggle-display-controls">
+        <button id="display-original-page">Show Original</button>
+        <button id="display-translated-page">Show Translation</button>
+    </div>
+    <script src="translate.js"></script>
 	</body>
 </html>
 
