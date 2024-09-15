@@ -90,39 +90,6 @@ const addEventListeners = () =>
         console.log(`error encountered while triggering translate page: ${err}`);
     };// end reportError
         
-    document.getElementById('translate-form').addEventListener("submit", async (e) =>
-    {
-        e.preventDefault();
-        
-        const form = e.target;
-        const settings = await loadSettings();
-        const formValues = getFormValues(form);
-        const apiKey = formValues['apiKey'];
-        const targetLanguage = formValues['target-language'];
-        const characterLimit = Number(formValues['characterLimit']);
-        
-        const triggerTranslatePage = (tabs) =>
-        {
-            browser.tabs.sendMessage(tabs[0].id, {
-              command: "translatePage",
-              parameters: {
-                  targetLanguage,
-                  characterLimit,
-                  apiConfig: {
-                      ...settings,
-                      endpoint: API_ENDPOINT,
-                      key: apiKey
-                  }
-              }
-            });
-        };// end triggerTranslatePage
-        
-        browser.tabs
-          .query({ active: true, currentWindow: true})
-          .then(triggerTranslatePage)
-          .catch(reportError);
-    });
-
     document.getElementById('display-original-page').addEventListener('click', (ev) =>
     {
         const triggerMessage = (tabs) =>
