@@ -2,6 +2,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux';
 
 const {
     KEY_API_SETTINGS,
@@ -18,6 +19,12 @@ const {
 } = require('../utils.js');
 
 import TranslateForm from './TranslateForm';
+
+import store from '../store';
+import {
+  translatorMutator,
+  pageStateMutator
+} from '../store';
 
 const logError = (e) =>
 {
@@ -64,13 +71,15 @@ const initPage = async () =>
   const defaultSettings = await loadSettings();
 
   root.render(
-    <div id="translate-page">
-      <h1>Translate LLM</h1>
-      <TranslateForm
-        defaultValues={defaultSettings}
-        onSubmit={handleSubmitTranslateForm}
-      />
-    </div>
+    <Provider store={store}>
+      <div id="translate-page">
+        <h1>Translate LLM</h1>
+        <TranslateForm
+          defaultValues={defaultSettings}
+          onSubmit={handleSubmitTranslateForm}
+        />
+      </div>
+    </Provider>
   );
 };// end initPage
 

@@ -22,8 +22,6 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 //
 // =============================================================================
 
-console.log('GOT HERE');
-
 // TODO: get defaults
 const translatorInitialState = {
   targetLanguage: 'english',

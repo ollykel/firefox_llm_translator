@@ -38,13 +38,13 @@ const TranslateForm = ({ defaultValues, onSubmit }) =>
 
   return (
     <form onSubmit={handleSubmit}>
-      <label for="targetLanguage">Target Language: </label>
+      <label htmlFor="targetLanguage">Target Language: </label>
       <input name="targetLanguage" type="text" value={targetLanguage} onChange={changeTargetLanguage} required />
-      <label for="characterLimit">Character Limit: </label>
+      <label htmlFor="characterLimit">Character Limit: </label>
       <input name="characterLimit" type="number" min={1000} value={characterLimit} onChange={changeCharacterLimit} required />
-      <label for="apiKey">API Key: </label>
+      <label htmlFor="apiKey">API Key: </label>
       <input name="apiKey" type="password" value={apiKey} onChange={changeApiKey} required />
-      <label for="temperature">Temperature:</label>
+      <label htmlFor="temperature">Temperature:</label>
       <input type="number" id="temperature" name="temperature" step="0.01" min="0.0" max="1.0" value={temperature} onChange={changeTemperature} required />
       <button type="submit">Translate</button>
     </form>
