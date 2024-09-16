@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 const { useState } = React;
 
@@ -12,8 +13,9 @@ const makeChangeHandler = (setValue) =>
   };
 };// end makeChangeHandler
 
-const TranslateForm = ({ defaultValues, onSubmit }) =>
+const TranslateForm = ({ onSubmit }) =>
 {
+  const defaultValues = useSelector((state) => state.translator);
   const [targetLanguage, setTargetLanguage] = useState(defaultValues?.targetLanguage || "");
   const [characterLimit, setCharacterLimit] = useState(defaultValues?.characterLimit || 5000);
   const [apiKey, setApiKey] = useState(defaultValues?.apiKey || "");

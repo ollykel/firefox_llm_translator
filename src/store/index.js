@@ -4,6 +4,10 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 // import { albumsApi } from './apis/albumsApi';
 // import { photosApi } from './apis/photosApi';
 
+const {
+  loadSettings
+} = require('../utils.js');
+
 // === App State ===============================================================
 //
 // - translator state:
@@ -23,12 +27,7 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 // =============================================================================
 
 // TODO: get defaults
-const translatorInitialState = {
-  targetLanguage: 'english',
-  apiKey: '',
-  characterLimit: 4000,
-  temperature: 0.7
-};
+const translatorInitialState = await loadSettings();
 
 const PAGE_STATE_UNTRANSLATED = 'page-state-untranslated';
 const PAGE_STATE_REQUESTING = 'page-state-requesting';
