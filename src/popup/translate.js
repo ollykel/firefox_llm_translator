@@ -2,7 +2,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch } from 'react-redux';
 
 const {
     KEY_API_SETTINGS,
@@ -159,14 +159,30 @@ browser.tabs
 
 browser.runtime.onMessage.addListener((message) =>
 {
-    if (message.command === 'notifyRequestProcessing')
-    {
+  switch (message.command)
+  {
+    case 'notifyRequestProcessing':
+      {
         notifyRequestProcessing();
-    }
-    else if (message.command === 'notifyRequestProcessingFinished')
-    {
+      }
+      break;
+    case 'notifyRequestProcessingFinished':
+      {
         notifyRequestProcessingFinished();
-    }
+      }
+      break;
+    case 'dispatch':
+      {
+        const dispatch = useDispatch();
+
+        dispatch(message.parameters);
+      }
+      break;
+    default:
+      {
+        console.error(`unrecognized message command: ${message.command}`);
+      }
+  }// end switch (message.command)
 });
 
 // load settings
