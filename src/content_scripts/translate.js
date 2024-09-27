@@ -3,6 +3,11 @@
 // Provides in-page functions for traversing DOM tree and replacing text nodes
 // with translated text provided by an API call to an LLM.
 
+import store from '../store';
+import {
+  pageStateMutator
+} from '../store';
+
 (() =>
 {
     // Global guard variable, to prevent multiple executions.
@@ -44,15 +49,36 @@
       isOnlyWhitespace
     } = require('../utils.js');
 
+    const postState = () =>
+    {
+      browser.runtime.sendMessage({
+        command: 'postState',
+        parameters: store.getState()
+      });
+    };// end postState
+
     const notifyRequestProcessing = () =>
     {
-        browser.runtime.sendMessage({ command: "notifyRequestProcessing", });
+      const action = pageStateMutator.setRequesting();
+
+      store.dispatch(action);
+      browser.runtime.sendMessage({
+        command: 'dispatch',
+        parameters: action
+      });
     };// end notifyRequestProcessing
 
     const notifyRequestProcessingFinished = () =>
     {
-        browser.runtime.sendMessage({ command: "notifyRequestProcessingFinished" });
-        alert('Translation finished.');
+      const action = pageStateMutator.setViewingTranslation();
+
+      store.dispatch(action);
+      browser.runtime.sendMessage({
+        command: 'dispatch',
+        parameters: action
+      });
+
+      alert('Translation finished.');
     };// end notifyRequestProcessingFinished
 
     const {
@@ -379,18 +405,21 @@ ${batchStr}
 
     browser.runtime.onMessage.addListener((message) =>
     {
-        if (message.command === 'translatePage')
-        {
-            translatePage(message.parameters);
-        }
-        else if (message.command === 'displayOriginalPage')
-        {
-            displayOriginalPage();
-        }
-        else if (message.command === 'displayTranslatedPage')
-        {
-            displayTranslatedPage();
-        }
+      switch (message.command)
+      {
+        case 'requestState':
+          postState();
+          break;
+        case 'translatePage':
+          translatePage(message.parameters);
+          break;
+        case 'displayOriginalPage':
+          displayOriginalPage();
+          break;
+        case 'displayTranslatedPage':
+          displayTranslatedPage();
+          break;
+      }// end switch (message.command)
     });
 }
 )();

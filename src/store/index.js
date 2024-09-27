@@ -80,6 +80,15 @@ const pageStateSlice = createSlice({
     setViewingOriginal: (state) =>
     {
       state.state = PAGE_STATE_VIEWING_ORIGINAL;
+    },
+    replace: (state, action) =>
+    {
+      const kvPairs = Object.entries(action.payload);
+
+      for (const [key, value] of kvPairs)
+      {
+        state[key] = value;
+      }// end for ([key, value] of kvPairs)
     }
   }
 });// end pageStateSlice
@@ -100,3 +109,9 @@ setupListeners(store.dispatch);
 export default store;
 export const translatorMutator = translatorSlice.actions;
 export const pageStateMutator = pageStateSlice.actions;
+export const pageStates = {
+  PAGE_STATE_UNTRANSLATED,
+  PAGE_STATE_REQUESTING,
+  PAGE_STATE_VIEWING_TRANSLATION,
+  PAGE_STATE_VIEWING_ORIGINAL
+};

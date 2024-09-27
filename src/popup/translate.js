@@ -2,7 +2,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { Provider, useDispatch } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 
 const {
     KEY_API_SETTINGS,
@@ -23,7 +23,8 @@ import TranslateForm from './TranslateForm';
 import store from '../store';
 import {
   translatorMutator,
-  pageStateMutator
+  pageStateMutator,
+  pageStates
 } from '../store';
 
 const logError = (e) =>
@@ -35,6 +36,13 @@ const reportError = (err) =>
 {
     console.log(`error encountered while triggering translate page: ${err}`);
 };// end reportError
+
+const requestState = (tabs) =>
+{
+  browser.tabs.sendMessage(tabs[0].id, {
+    command: 'requestState'
+  });
+};// end requestState
 
 const handleSubmitTranslateForm = async (values) =>
 {
@@ -64,21 +72,59 @@ const handleSubmitTranslateForm = async (values) =>
       .catch(reportError);
 };// end handleSubmitTranslateForm
 
+const Popup = () =>
+{
+  const pageState = useSelector((state) => state.pageState);
+  const pageStatePanel = (() =>
+  {
+    switch (pageState.state)
+    {
+      case pageStates.PAGE_STATE_UNTRANSLATED:
+        return null;
+      case pageStates.PAGE_STATE_REQUESTING:
+        return (
+          <div>Processing translation request ...</div>
+        );
+      case pageStates.PAGE_STATE_VIEWING_TRANSLATION:
+        return (
+          <div>
+            <span>Viewing Translation</span>
+            <button>View Original</button>
+          </div>
+        );
+      case pageStates.PAGE_STATE_VIEWING_ORIGINAL:
+        return (
+          <div>
+            <span>Viewing Original</span>
+            <button>View Translation</button>
+          </div>
+        );
+      default:
+        return (
+          <div>
+            INVALID PAGE STATE: {pageState.state}
+          </div>
+        );
+    }// end switch (pageState.state)
+  })();
+
+  return (
+    <div id="translate-page">
+      <h1>Translate LLM</h1>
+      <TranslateForm onSubmit={handleSubmitTranslateForm} />
+      {pageStatePanel}
+    </div>
+  );
+};// end Popup
+
 const initPage = async () =>
 {
   const el = document.getElementById('root');
   const root = ReactDOM.createRoot(el);
-  const defaultSettings = await loadSettings();
 
   root.render(
     <Provider store={store}>
-      <div id="translate-page">
-        <h1>Translate LLM</h1>
-        <TranslateForm
-          defaultValues={defaultSettings}
-          onSubmit={handleSubmitTranslateForm}
-        />
-      </div>
+      <Popup />
     </Provider>
   );
 };// end initPage
@@ -121,20 +167,6 @@ const addEventListeners = () =>
     });
 };// end addEventListeners
 
-const notifyRequestProcessing = () =>
-{
-    const notifElem = document.getElementById('notif-request-processing');
-
-    notifElem.style.setProperty('display', 'inline-block');
-};// end notifyRequestProcessing
-
-const notifyRequestProcessingFinished = () =>
-{
-    const notifElem = document.getElementById('notif-request-processing');
-
-    notifElem.style.removeProperty('display');
-};// end notifyRequestProcessingFinished
-
 const reportExecuteScriptError = (error) =>
 {
     console.log(`Translate popup script failed: ${error}`);
@@ -155,27 +187,31 @@ const injectScript = (tabs) =>
 browser.tabs
     .query({ active: true, currentWindow: true })
     .then(injectScript)
+    .then(() =>
+    {
+      // request page state
+      browser.tabs
+        .query({ active: true, currentWindow: true })
+        .then(requestState)
+        .catch(reportExecuteScriptError);
+    })
     .catch(reportExecuteScriptError);
 
 browser.runtime.onMessage.addListener((message) =>
 {
   switch (message.command)
   {
-    case 'notifyRequestProcessing':
-      {
-        notifyRequestProcessing();
-      }
-      break;
-    case 'notifyRequestProcessingFinished':
-      {
-        notifyRequestProcessingFinished();
-      }
-      break;
     case 'dispatch':
       {
-        const dispatch = useDispatch();
+        store.dispatch(message.parameters);
+      }
+      break;
+    case 'postState':
+      {
+        const { pageState } = message.parameters;
 
-        dispatch(message.parameters);
+        console.log(`pageState: ${JSON.stringify(pageState, true, 2)}`);
+        store.dispatch(pageStateMutator.replace(pageState));
       }
       break;
     default:
@@ -186,4 +222,4 @@ browser.runtime.onMessage.addListener((message) =>
 });
 
 // load settings
-window.addEventListener("load", initPage);
+initPage();
