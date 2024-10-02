@@ -87,6 +87,21 @@ const handleViewOriginal = async () =>
     .catch(reportError);
 };// end handleViewOriginal
 
+const handleViewTranslation = async () =>
+{
+  const triggerMessage = (tabs) =>
+  {
+    browser.tabs.sendMessage(tabs[0].id, {
+      command: "displayTranslatedPage"
+    });
+  };// end triggerMessage
+
+  browser.tabs
+    .query({ active: true, currentWindow: true })
+    .then(triggerMessage)
+    .catch(reportError);
+};// end handleViewTranslation
+
 const Popup = () =>
 {
   const pageState = useSelector((state) => state.pageState);
@@ -98,6 +113,13 @@ const Popup = () =>
 
       handleViewOriginal();
     };// end handleClickViewOriginal
+
+    const handleClickViewTranslation = async (ev) =>
+    {
+      ev.preventDefault();
+
+      handleViewTranslation();
+    };// end handleClickViewTranslation
 
     switch (pageState.state)
     {
@@ -120,7 +142,9 @@ const Popup = () =>
         return (
           <div>
             <span>Viewing Original</span>
-            <button>View Translation</button>
+            <button onClick={handleClickViewTranslation}>
+              View Translation
+            </button>
           </div>
         );
       default:
