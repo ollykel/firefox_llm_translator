@@ -405,8 +405,6 @@ ${batchStr}
       {
         elemVisitor.displayOrig();
       }// end for (const elemVisitor of getVisitedElementVisitors())
-
-      notifyViewingOriginal();
     };// end displayOriginalPage
 
     const displayTranslatedPage = () =>
@@ -429,6 +427,7 @@ ${batchStr}
           break;
         case 'displayOriginalPage':
           displayOriginalPage();
+          notifyViewingOriginal();
           break;
         case 'displayTranslatedPage':
           displayTranslatedPage();
