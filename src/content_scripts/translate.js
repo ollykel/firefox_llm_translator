@@ -92,6 +92,18 @@ import {
         parameters: action
       });
     };// end notifyViewingOriginal
+    
+    const notifyViewingTranslation = () =>
+    {
+      const action = pageStateMutator.setViewingTranslation();
+
+      store.dispatch(action);
+
+      browser.runtime.sendMessage({
+        command: 'dispatch',
+        parameters: action
+      });
+    };// end notifyViewingTranslation
 
     const {
         getElementVisitor,
@@ -431,6 +443,7 @@ ${batchStr}
           break;
         case 'displayTranslatedPage':
           displayTranslatedPage();
+          notifyViewingTranslation();
           break;
       }// end switch (message.command)
     });
