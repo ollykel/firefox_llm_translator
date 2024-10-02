@@ -80,6 +80,18 @@ import {
 
       alert('Translation finished.');
     };// end notifyRequestProcessingFinished
+    
+    const notifyViewingOriginal = () =>
+    {
+      const action = pageStateMutator.setViewingOriginal();
+
+      store.dispatch(action);
+
+      browser.runtime.sendMessage({
+        command: 'dispatch',
+        parameters: action
+      });
+    };// end notifyViewingOriginal
 
     const {
         getElementVisitor,
@@ -389,18 +401,20 @@ ${batchStr}
 
     const displayOriginalPage = () =>
     {
-        for (const elemVisitor of getVisitedElementVisitors())
-        {
-            elemVisitor.displayOrig();
-        }// end for (const elemVisitor of getVisitedElementVisitors())
+      for (const elemVisitor of getVisitedElementVisitors())
+      {
+        elemVisitor.displayOrig();
+      }// end for (const elemVisitor of getVisitedElementVisitors())
+
+      notifyViewingOriginal();
     };// end displayOriginalPage
 
     const displayTranslatedPage = () =>
     {
-        for (const elemVisitor of getVisitedElementVisitors())
-        {
-            elemVisitor.displayTranslated();
-        }// end for (const elemVisitor of getVisitedElementVisitors())
+      for (const elemVisitor of getVisitedElementVisitors())
+      {
+          elemVisitor.displayTranslated();
+      }// end for (const elemVisitor of getVisitedElementVisitors())
     };// end displayTranslatedPage
 
     browser.runtime.onMessage.addListener((message) =>
