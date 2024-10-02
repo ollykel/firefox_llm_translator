@@ -72,11 +72,33 @@ const handleSubmitTranslateForm = async (values) =>
       .catch(reportError);
 };// end handleSubmitTranslateForm
 
+const handleViewOriginal = async () =>
+{
+  const triggerMessage = (tabs) =>
+  {
+    browser.tabs.sendMessage(tabs[0].id, {
+      command: "displayOriginalPage"
+    });
+  };// end triggerMessage
+
+  browser.tabs
+    .query({ active: true, currentWindow: true })
+    .then(triggerMessage)
+    .catch(reportError);
+};// end handleViewOriginal
+
 const Popup = () =>
 {
   const pageState = useSelector((state) => state.pageState);
   const pageStatePanel = (() =>
   {
+    const handleClickViewOriginal = async (ev) =>
+    {
+      ev.preventDefault();
+
+      handleViewOriginal();
+    };// end handleClickViewOriginal
+
     switch (pageState.state)
     {
       case pageStates.PAGE_STATE_UNTRANSLATED:
@@ -89,7 +111,9 @@ const Popup = () =>
         return (
           <div>
             <span>Viewing Translation</span>
-            <button>View Original</button>
+            <button onClick={handleClickViewOriginal}>
+              View Original
+            </button>
           </div>
         );
       case pageStates.PAGE_STATE_VIEWING_ORIGINAL:
