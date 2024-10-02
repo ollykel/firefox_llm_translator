@@ -392,18 +392,16 @@ ${batchStr}
             maxCharCount: characterLimit
         });
 
-        notifyRequestProcessing();
         await translateElemContentBatches({
             elemContentBatches,
             apiConfig,
             targetLanguage
         });
-        notifyRequestProcessingFinished();
     };// end translateElement
     
-    const translatePage = ({ targetLanguage, characterLimit, apiConfig }) =>
+    const translatePage = async ({ targetLanguage, characterLimit, apiConfig }) =>
     {
-        translateElement({
+        await translateElement({
             element: document.body,
             targetLanguage,
             characterLimit,
@@ -435,7 +433,9 @@ ${batchStr}
           postState();
           break;
         case 'translatePage':
-          translatePage(message.parameters);
+          notifyRequestProcessing();
+          translatePage(message.parameters).
+            then(notifyRequestProcessingFinished);
           break;
         case 'displayOriginalPage':
           displayOriginalPage();
