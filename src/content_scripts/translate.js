@@ -117,14 +117,16 @@ import {
             'span': true,
             'a': true,
             'li': true,
-            'td': true,
-            'th': true,
+            'tbody': true,
             'h1': true,
             'h2': true,
             'h3': true,
             'h4': true,
             'button': true,
-            'label': true
+            'nav': true,
+            'label': true,
+            'caption': true,
+            'figcaption': true
         };// end TARGET_ELEMS_SET
 
         const collectTargetElemVisitors = (elementVisitor) =>
