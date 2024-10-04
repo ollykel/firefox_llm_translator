@@ -12,7 +12,6 @@ const getElementUID = (element) =>
     else
     {
         const uid = `element${elementUIDCount}`;
-        console.log(`Visiting new element ${uid}`)// TODO: remove debug
 
         element.setAttribute(ELEMENT_UID_ATTR_NAME, uid);
         ++elementUIDCount;

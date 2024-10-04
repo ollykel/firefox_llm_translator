@@ -421,7 +421,6 @@ ${batchStr}
     {
       for (const elemVisitor of getVisitedElementVisitors())
       {
-        console.log(`[${elemVisitor.getUID()}]: Translated content: ${elemVisitor.getTranslatedContent()}`);// TODO: remove debug
         elemVisitor.displayTranslated();
       }// end for (const elemVisitor of getVisitedElementVisitors())
     };// end displayTranslatedPage
