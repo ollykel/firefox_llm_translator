@@ -12,6 +12,7 @@ const getElementUID = (element) =>
     else
     {
         const uid = `element${elementUIDCount}`;
+        console.log(`Visiting new element ${uid}`)// TODO: remove debug
 
         element.setAttribute(ELEMENT_UID_ATTR_NAME, uid);
         ++elementUIDCount;
@@ -31,14 +32,20 @@ const getElementVisitor = (element) =>
     else
     {
         const tagName = element.tagName.toLowerCase();
-        const origContent = "" + element.innerHTML;
+        const origContent = element.innerHTML;
 
         const ridToAttrMap = {};
         let ridCount = 0;
-        let translatedContent = "" + element.innerHTML;
+        let translatedContent = null;
 
         // Returns the relative id of a given element (i.e. its unique id
         // relative to <element>, the ancestor element in question).
+        
+        const getElement = () =>
+        {
+          return document.querySelector(`[${ELEMENT_UID_ATTR_NAME}="${uid}"]`);
+        };// end getElement
+
         const getElemRID = (elem) =>
         {
             const id = `${ridCount}`;
@@ -179,6 +186,11 @@ const getElementVisitor = (element) =>
             return "" + origContentMinimized;
         };// end getOrigContentMinimized
 
+        const setInnerHTML = (innerHTML) =>
+        {
+          element.innerHTML = innerHTML;
+        };// end setInnerHTML
+
         const setTranslatedContentMinimized = (minimizedContent) =>
         {
             const dummyElement = document.createElement("div");
@@ -203,7 +215,7 @@ const getElementVisitor = (element) =>
             };// end restoreElement
 
             restoreElement(dummyElement);
-            translatedContent = dummyElement.innerHTML;
+            translatedContent = "" + dummyElement.innerHTML;
         };// end setTranslatedContentMinimized
 
         const visitor = Object.freeze({
@@ -215,8 +227,20 @@ const getElementVisitor = (element) =>
             getTranslatedContent: () => translatedContent,
             setTranslatedContent: (newContent) => { translatedContent = newContent; },
             setTranslatedContentMinimized,
-            displayOrig: () => { element.innerHTML = origContent; },
-            displayTranslated: () => { element.innerHTML = translatedContent; }
+            displayOrig: () =>
+            {
+              if (translatedContent !== null)
+              {
+                setInnerHTML(origContent);
+              }
+            },
+            displayTranslated: () =>
+            {
+              if (translatedContent !== null)
+              {
+                setInnerHTML(translatedContent);
+              }
+            }
         });
 
         uidToVisitorMap[uid] = visitor;
