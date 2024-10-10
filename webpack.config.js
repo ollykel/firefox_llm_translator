@@ -1,6 +1,8 @@
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
 const SRC_DIR = path.resolve(__dirname, 'src');
+const DEST_DIR = path.resolve(__dirname, 'target');
 
 module.exports = {
   mode: 'development',
@@ -31,6 +33,14 @@ module.exports = {
             ]
           }
         }
+      },
+      {
+        test: /\.css/i,
+        use: [
+          { loader: "style-loader" },
+          { loader: "css-loader" },
+          { loader: "postcss-loader" }
+        ]
       }
     ]
   }

@@ -6,7 +6,7 @@ WEBPACK=npx webpack
 TARGET_DIR=target
 SRC_DIR=src
 TARGETS_JS=$(TARGET_DIR)/content_scripts/translate.js $(TARGET_DIR)/options/options.js $(TARGET_DIR)/popup/translate.js
-TARGETS=$(TARGET_DIR)/manifest.json $(TARGET_DIR)/options/options.html $(TARGET_DIR)/popup/translate.html $(TARGET_DIR)/master.css $(TARGETS_JS)
+TARGETS=$(TARGET_DIR)/manifest.json $(TARGET_DIR)/options/options.html $(TARGET_DIR)/popup/translate.html $(TARGETS_JS)
 PACKAGE=llm_translator.xpi
 
 $(TARGET_DIR)/%.js : $(SRC_DIR)/%.js
@@ -53,8 +53,6 @@ $(TARGET_DIR)/options/options.js :				$(TARGET_DIR)/options/ $(SRC_DIR)/options/
 $(TARGET_DIR)/popup/translate.html :			$(TARGET_DIR)/popup/ $(SRC_DIR)/popup/translate.html
 
 $(TARGET_DIR)/popup/translate.js :				$(TARGET_DIR)/popup/ $(wildcard $(SRC_DIR)/popup/*.js) $(SRC_DIR)/config.json $(SRC_DIR)/utils.js webpack.config.js
-
-$(TARGET_DIR)/master.css :						$(TARGET_DIR)/ $(SRC_DIR)/master.css
 
 $(PACKAGE) :									$(TARGETS) package.sh
 	./package.sh
