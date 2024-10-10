@@ -4,6 +4,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 
+import '../master.css';
+
 const {
     KEY_API_SETTINGS,
     API_ENDPOINT
@@ -127,29 +129,31 @@ const Popup = () =>
         return null;
       case pageStates.PAGE_STATE_REQUESTING:
         return (
-          <div>Processing translation request ...</div>
+            <div className="bg-green-200">
+                Processing translation request ...
+            </div>
         );
       case pageStates.PAGE_STATE_VIEWING_TRANSLATION:
         return (
-          <div>
+          <div className="flex flex-col">
             <span>Viewing Translation</span>
-            <button onClick={handleClickViewOriginal}>
+            <button onClick={handleClickViewOriginal} className="bg-blue-200 hover:bg-blue-400">
               View Original
             </button>
           </div>
         );
       case pageStates.PAGE_STATE_VIEWING_ORIGINAL:
         return (
-          <div>
+          <div className="flex flex-col">
             <span>Viewing Original</span>
-            <button onClick={handleClickViewTranslation}>
+            <button onClick={handleClickViewTranslation} className="bg-blue-200 hover:bg-blue-400">
               View Translation
             </button>
           </div>
         );
       default:
         return (
-          <div>
+          <div className="bg-red-400">
             INVALID PAGE STATE: {pageState.state}
           </div>
         );
@@ -158,7 +162,7 @@ const Popup = () =>
 
   return (
     <div id="translate-page">
-      <h1>Translate LLM</h1>
+      <h1 className="text-3xl font-bold font-serif">Translate LLM</h1>
       <TranslateForm onSubmit={handleSubmitTranslateForm} />
       {pageStatePanel}
     </div>

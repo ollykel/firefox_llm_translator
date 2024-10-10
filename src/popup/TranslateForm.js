@@ -1,6 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
+import '../master.css';
+
 const { useState } = React;
 
 const makeChangeHandler = (setValue) =>
@@ -39,16 +41,54 @@ const TranslateForm = ({ onSubmit }) =>
   };// end handleSubmit
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="flex flex-col">
       <label htmlFor="targetLanguage">Target Language: </label>
-      <input name="targetLanguage" type="text" value={targetLanguage} onChange={changeTargetLanguage} required />
+      <input
+        name="targetLanguage"
+        type="text"
+        value={targetLanguage}
+        onChange={changeTargetLanguage}
+        className="bg-gray-300"
+        required
+      />
       <label htmlFor="characterLimit">Character Limit: </label>
-      <input name="characterLimit" type="number" min={1000} value={characterLimit} onChange={changeCharacterLimit} required />
+      <input
+        name="characterLimit"
+        type="number"
+        min={1000}
+        value={characterLimit}
+        onChange={changeCharacterLimit}
+        className="bg-gray-300"
+        required
+      />
       <label htmlFor="apiKey">API Key: </label>
-      <input name="apiKey" type="password" value={apiKey} onChange={changeApiKey} required />
+      <input
+        name="apiKey"
+        type="password"
+        value={apiKey}
+        onChange={changeApiKey}
+        className="bg-gray-300"
+        required
+      />
       <label htmlFor="temperature">Temperature:</label>
-      <input type="number" id="temperature" name="temperature" step="0.01" min="0.0" max="1.0" value={temperature} onChange={changeTemperature} required />
-      <button type="submit">Translate</button>
+      <input
+        type="number"
+        id="temperature"
+        name="temperature"
+        step="0.01"
+        min="0.0"
+        max="1.0"
+        value={temperature}
+        onChange={changeTemperature}
+        className="bg-gray-300"
+        required
+      />
+      <button
+        type="submit"
+        className="text-2xl font-bold bg-blue-200 hover:bg-blue-400"
+      >
+        Translate
+      </button>
     </form>
   );
 };// end TranslateForm
