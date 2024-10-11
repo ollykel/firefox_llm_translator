@@ -138,7 +138,7 @@ const Popup = () =>
           <div className="flex flex-col">
             <span className="font-bold">Toggle View:</span>
             <div className="grow grid grid-cols-2 place-content-stretch">
-                <button className="grow bg-blue-800">
+                <button className="grow text-white bg-blue-800">
                     Translation
                 </button>
                 <button onClick={handleClickViewOriginal} className="grow bg-blue-200 hover:bg-blue-400">
@@ -155,7 +155,7 @@ const Popup = () =>
                 <button onClick={handleClickViewTranslation} className="grow bg-blue-200 hover:bg-blue-400">
                     Translation
                 </button>
-                <button className="grow bg-blue-800">
+                <button className="grow text-white bg-blue-800">
                     Original
                 </button>
             </div>
