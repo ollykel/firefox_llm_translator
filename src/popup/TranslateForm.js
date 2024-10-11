@@ -48,7 +48,7 @@ const TranslateForm = ({ onSubmit }) =>
         type="text"
         value={targetLanguage}
         onChange={changeTargetLanguage}
-        className="bg-gray-300"
+        className="bg-gray-300 p-1"
         required
       />
       <label htmlFor="characterLimit">Character Limit: </label>
@@ -58,7 +58,7 @@ const TranslateForm = ({ onSubmit }) =>
         min={1000}
         value={characterLimit}
         onChange={changeCharacterLimit}
-        className="bg-gray-300"
+        className="bg-gray-300 p-1"
         required
       />
       <label htmlFor="apiKey">API Key: </label>
@@ -67,7 +67,7 @@ const TranslateForm = ({ onSubmit }) =>
         type="password"
         value={apiKey}
         onChange={changeApiKey}
-        className="bg-gray-300"
+        className="bg-gray-300 p-1"
         required
       />
       <label htmlFor="temperature">Temperature:</label>
@@ -80,7 +80,7 @@ const TranslateForm = ({ onSubmit }) =>
         max="1.0"
         value={temperature}
         onChange={changeTemperature}
-        className="bg-gray-300"
+        className="bg-gray-300 p-1"
         required
       />
       <button

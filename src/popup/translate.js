@@ -129,7 +129,7 @@ const Popup = () =>
         return null;
       case pageStates.PAGE_STATE_REQUESTING:
         return (
-            <div className="bg-green-200">
+            <div className="bg-green-200 p-1">
                 Processing translation request ...
             </div>
         );
