@@ -85,7 +85,7 @@ const TranslateForm = ({ onSubmit }) =>
       />
       <button
         type="submit"
-        className="text-2xl font-bold bg-blue-200 hover:bg-blue-400"
+        className="text-2xl font-bold bg-blue-200 hover:bg-blue-400 my-2 rounded"
       >
         Translate
       </button>

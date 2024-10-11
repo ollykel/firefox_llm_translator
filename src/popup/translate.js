@@ -161,7 +161,7 @@ const Popup = () =>
   })();
 
   return (
-    <div id="translate-page">
+    <div id="translate-page" className="p-2">
       <h1 className="text-3xl font-bold font-serif">Translate LLM</h1>
       <TranslateForm onSubmit={handleSubmitTranslateForm} />
       {pageStatePanel}
