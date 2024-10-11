@@ -136,19 +136,29 @@ const Popup = () =>
       case pageStates.PAGE_STATE_VIEWING_TRANSLATION:
         return (
           <div className="flex flex-col">
-            <span>Viewing Translation</span>
-            <button onClick={handleClickViewOriginal} className="bg-blue-200 hover:bg-blue-400">
-              View Original
-            </button>
+            <span className="font-bold">Toggle View:</span>
+            <div className="grow grid grid-cols-2 place-content-stretch">
+                <button className="grow bg-blue-800">
+                    Translation
+                </button>
+                <button onClick={handleClickViewOriginal} className="grow bg-blue-200 hover:bg-blue-400">
+                    Original
+                </button>
+            </div>
           </div>
         );
       case pageStates.PAGE_STATE_VIEWING_ORIGINAL:
         return (
           <div className="flex flex-col">
-            <span>Viewing Original</span>
-            <button onClick={handleClickViewTranslation} className="bg-blue-200 hover:bg-blue-400">
-              View Translation
-            </button>
+            <span className="font-bold">Toggle View:</span>
+            <div className="grow grid grid-cols-2 place-content-stretch">
+                <button onClick={handleClickViewTranslation} className="grow bg-blue-200 hover:bg-blue-400">
+                    Translation
+                </button>
+                <button className="grow bg-blue-800">
+                    Original
+                </button>
+            </div>
           </div>
         );
       default:
